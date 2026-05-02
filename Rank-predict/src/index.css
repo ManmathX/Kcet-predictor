@@ -592,14 +592,30 @@ h1 {
 
 .toolbar {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
-  margin: 8px 0;
-  padding: 8px 10px;
-  background: rgba(0,0,0,0.2);
+  margin: 16px 0;
+  padding: 10px 14px;
+  background: rgba(17, 24, 39, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--soft);
+  border: 1px solid var(--line);
   flex-wrap: wrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.toolbar .ghost-btn {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.toolbar .ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: var(--soft);
 }
 
 .toolbar select {
@@ -2503,18 +2519,44 @@ a.contact-card:hover {
   border-radius: var(--radius-sm);
   background: rgba(15, 23, 42, 0.6);
   color: #fff;
-  padding: 8px 12px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
+  align-items: stretch;
+  overflow: hidden;
   transition: all 0.3s ease;
-  font-size: 14px;
 }
 
 .multi-select-trigger:hover {
   border-color: rgba(255,255,255,0.2);
   background: rgba(15, 23, 42, 0.8);
+}
+
+.multi-select-trigger-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.multi-select-reset {
+  width: 38px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 1px solid var(--line);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.multi-select-reset:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--red);
 }
 
 .multi-select-menu {

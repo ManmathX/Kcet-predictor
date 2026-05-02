@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 
-const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
+const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 'item' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -31,15 +31,28 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder }) => {
 
   const displayValue = selected.includes('all') 
     ? placeholder 
-    : `${selected.length} group${selected.length > 1 ? 's' : ''} selected`;
+    : `${selected.length} ${unit}${selected.length > 1 ? 'es' : ''} selected`;
 
   return (
     <div className="multi-select" ref={dropdownRef}>
-      <div className="multi-select-trigger" onClick={() => setIsOpen(!isOpen)}>
-        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayValue}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+      <div className="multi-select-trigger">
+        <div className="multi-select-trigger-text" onClick={() => setIsOpen(!isOpen)}>
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayValue}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+        {!selected.includes('all') && (
+          <button 
+            className="multi-select-reset" 
+            onClick={(e) => { e.stopPropagation(); onChange(['all']); }}
+            title={`Clear ${unit}s`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
       {isOpen && (
         <div className="multi-select-menu">
@@ -768,8 +781,11 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
   const [pcmMarksInput, setPcmMarksInput] = useState('');
   const [rankInput, setRankInput] = useState('');
   const [seat, setSeat] = useState('GM');
+  const [predictionId, setPredictionId] = useState(0);
   const [branchGroup, setBranchGroup] = useState(['all']);
-  const [branchCodeFilter, setBranchCodeFilter] = useState('all');
+  const [branchCodeFilter, setBranchCodeFilter] = useState(['all']);
+  const [hasInteractedBranch, setHasInteractedBranch] = useState(false);
+  const [hasInteractedCourse, setHasInteractedCourse] = useState(false);
   const [city, setCity] = useState('all');
   const [searchInput, setSearchInput] = useState('');
   const [quickSearch, setQuickSearch] = useState('');
@@ -905,6 +921,9 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
       setRankPrediction(prediction);
       setRankRange(getRankRange(rank, mode));
       setDisplayLimit(DISPLAY_STEP);
+      setPredictionId(prev => prev + 1);
+      setHasInteractedBranch(false);
+      setHasInteractedCourse(false);
       
       if (!profile) {
         setPendingRank(rank);
@@ -944,7 +963,7 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
         .filter((item) => {
           if (!item) return false;
           if (!branchGroup.includes('all') && !branchGroup.includes(item.row[4])) return false;
-          if (branchCodeFilter !== 'all' && item.row[6] !== branchCodeFilter) return false;
+          if (!branchCodeFilter.includes('all') && !branchCodeFilter.includes(item.row[6])) return false;
           if (city !== 'all' && item.row[3] !== city) return false;
           if (search && !item.text.includes(search)) return false;
           if (!ignoreChanceFilter && chanceFilter !== 'all' && item.chance.type !== chanceFilter) return false;
@@ -980,7 +999,9 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
     setQuickSearch('');
     setSearchInput('');
     setBranchGroup(['all']);
-    setBranchCodeFilter('all');
+    setBranchCodeFilter(['all']);
+    setHasInteractedBranch(false);
+    setHasInteractedCourse(false);
     setCity('all');
     setChanceFilter('all');
     setSortSelect('cutoff');
@@ -1298,33 +1319,40 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                 </>
               )}
 
-            <div className="toolbar">
+            <div className="toolbar" key={predictionId}>
               <MultiSelectDropdown
                 options={[
-                  { value: 'all', label: 'Branches in Groups' },
                   ...DATA.branchGroups.map(group => ({ value: group, label: group }))
                 ]}
                 selected={branchGroup}
                 onChange={(newSelected) => {
                   setBranchGroup(newSelected);
-                  setBranchCodeFilter('all');
+                  setBranchCodeFilter(['all']);
+                  setHasInteractedBranch(true);
+                  setHasInteractedCourse(false);
                 }}
-                placeholder="Branch Groups"
+                placeholder={hasInteractedBranch ? "All Branches" : "Select Branch"}
+                unit="branch"
               />
-              <select aria-label="Specific Branch" value={branchCodeFilter} onChange={(e) => setBranchCodeFilter(e.target.value)} style={{ textOverflow: 'ellipsis' }}>
-                <option value="all">Branches in Groups</option>
-                {DATA.branchCodes
-                  ?.filter(([, , group]) => branchGroup.includes('all') || branchGroup.includes(group))
-                  .map(([code, name]) => (
-                    <option key={code} value={code}>
-                      {code} - {name}
-                    </option>
-                  ))}
-              </select>
-              <button className="icon-btn" type="button" title="Clear filters" aria-label="Clear filters" onClick={clearInteractiveFilters} style={{ width: '36px', minHeight: '36px', flex: '0 0 auto', padding: 0 }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <MultiSelectDropdown
+                options={[
+                  ...DATA.branchCodes
+                    ?.filter(([, , group]) => branchGroup.includes('all') || branchGroup.includes(group))
+                    .map(([code, name]) => ({ value: code, label: `${code} - ${name}` }))
+                ]}
+                selected={branchCodeFilter}
+                onChange={(newSelected) => {
+                  setBranchCodeFilter(newSelected);
+                  setHasInteractedCourse(true);
+                }}
+                placeholder={hasInteractedCourse ? "All Courses" : "Select Course"}
+                unit="course"
+              />
+              <button className="ghost-btn" type="button" onClick={clearInteractiveFilters} style={{ minHeight: '42px', padding: '0 12px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '6px' }}>
+                  <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
+                Clear all filters
               </button>
             </div>
 
