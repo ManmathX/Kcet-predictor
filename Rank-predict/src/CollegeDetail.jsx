@@ -225,7 +225,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
 
             {/* Tab Content */}
             {activeTab === 'about' && (
-              <div className="cd-tab-content">
+              <div key="about" className="cd-tab-content">
                 {college.description && (
                   <div className="cd-section">
                     <h3 className="cd-section-title">About the College</h3>
@@ -306,7 +306,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
             )}
 
             {activeTab === 'placement' && (
-              <div className="cd-tab-content">
+              <div key="placement" className="cd-tab-content">
                 <div className="cd-section">
                   <h3 className="cd-section-title">💼 Placement Overview</h3>
                   
@@ -414,7 +414,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
             )}
 
             {activeTab === 'facilities' && (
-              <div className="cd-tab-content">
+              <div key="facilities" className="cd-tab-content">
                 {hasFacilities && (
                   <div className="cd-section">
                     <h3 className="cd-section-title">🏢 Campus Facilities</h3>
