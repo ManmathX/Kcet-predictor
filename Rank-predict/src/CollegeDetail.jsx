@@ -7,8 +7,21 @@ export default function CollegeDetail({ collegeCode, onClose }) {
   const [collegeCourses, setCollegeCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fromDatabase, setFromDatabase] = useState(false);
-  const [activeTab, setActiveTab] = useState('about');
   const [selectedCategory, setSelectedCategory] = useState(15); // Default GM
+  const [activeTab, setActiveTab] = useState('about');
+
+  // Memoize sorted courses based on cutoffs for the selected category, or by name
+  const sortedCourses = useMemo(() => {
+    if (!collegeCourses) return [];
+    return [...collegeCourses].sort((a, b) => {
+      const cutA = a.cutoffs && a.cutoffs[selectedCategory];
+      const cutB = b.cutoffs && b.cutoffs[selectedCategory];
+      if (cutA && cutB) return cutA - cutB;
+      if (cutA) return -1;
+      if (cutB) return 1;
+      return (a.branchName || "").localeCompare(b.branchName || "");
+    });
+  }, [collegeCourses, selectedCategory]);
 
   // Index → seatCode mapping from data.json seatCodes array:
   // 0:1G 1:1K 2:1R 3:2AG 4:2AK 5:2AR 6:2BG 7:2BK 8:2BR
@@ -407,19 +420,6 @@ export default function CollegeDetail({ collegeCode, onClose }) {
                   </div>
                   
                   {(() => {
-                    // Memoize sorted courses based on cutoffs for the selected category, or by name
-                    const sortedCourses = useMemo(() => {
-                      if (!collegeCourses) return [];
-                      return [...collegeCourses].sort((a, b) => {
-                        const cutA = a.cutoffs && a.cutoffs[selectedCategory];
-                        const cutB = b.cutoffs && b.cutoffs[selectedCategory];
-                        if (cutA && cutB) return cutA - cutB;
-                        if (cutA) return -1;
-                        if (cutB) return 1;
-                        return a.branchName.localeCompare(b.branchName);
-                      });
-                    }, [collegeCourses, selectedCategory]);
-
                     const hasAnyCutoff = collegeCourses.some(c => c.cutoffs && c.cutoffs[selectedCategory] != null);
                     return (
                       <>
