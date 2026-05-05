@@ -840,6 +840,7 @@ function Dashboard({ onLogout }) {
                         >
                           {c.isPublished ? '📤' : '📥'}
                         </button>
+                        <button
                           className="btn btn-ghost btn-icon"
                           title="Edit"
                           onClick={() => openEdit(c.college_code)}
