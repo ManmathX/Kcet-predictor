@@ -37,7 +37,9 @@ export async function fetchColleges(search = '') {
 }
 
 export async function fetchCollege(code) {
-  const res = await fetch(`${API_BASE}/colleges/${encodeURIComponent(code)}`);
+  const res = await fetch(`${API_BASE}/colleges/${encodeURIComponent(code)}`, {
+    headers: { 'x-admin-password': getAdminPassword() },
+  });
   if (!res.ok) throw new Error('Failed to fetch college');
   return res.json();
 }
