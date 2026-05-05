@@ -574,6 +574,25 @@ body {
   color: var(--text-muted);
 }
 
+/* Publish / Unpublish toggle buttons */
+.btn-publish {
+  font-size: 16px;
+}
+
+.btn-publish:hover:not(:disabled) {
+  background: var(--green-bg) !important;
+  color: var(--green) !important;
+}
+
+.btn-unpublish {
+  font-size: 16px;
+}
+
+.btn-unpublish:hover:not(:disabled) {
+  background: var(--yellow-bg) !important;
+  color: var(--yellow) !important;
+}
+
 /* ═══════════════════════════════════════════════
    Empty State
    ═══════════════════════════════════════════════ */

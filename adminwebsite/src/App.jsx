@@ -5,6 +5,7 @@ import {
   createCollege,
   updateCollege,
   deleteCollege as deleteCollegeApi,
+  togglePublish as togglePublishApi,
   verifyPassword,
   setAdminPassword,
   clearAdminPassword,
@@ -123,6 +124,7 @@ const EMPTY_FORM = {
   naac_grade: '',
   placement_info: '',
   hostel_available: false,
+  isPublished: false,
 };
 
 function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
@@ -168,6 +170,7 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
           naac_grade: data.naac_grade || '',
           placement_info: data.placement_info || '',
           hostel_available: data.hostel_available || false,
+          isPublished: data.isPublished || false,
         });
       })
       .catch(() => addToast('Failed to load college details.', 'error'))
@@ -544,6 +547,15 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
                 />
                 <span>Quick Flag: Hostel Available</span>
               </label>
+
+              <label className="checkbox-field" style={{ marginTop: '8px' }}>
+                <input
+                  type="checkbox"
+                  checked={form.isPublished}
+                  onChange={(e) => handleChange('isPublished', e.target.checked)}
+                />
+                <span>📢 Published (visible to students)</span>
+              </label>
             </div>
 
             <div className="modal-footer">
@@ -648,6 +660,30 @@ function Dashboard({ onLogout }) {
     }
   };
 
+  const handleTogglePublish = async (college) => {
+    // Optimistic UI Update
+    const previousState = [...colleges];
+    setColleges(prev => prev.map(c => 
+      c.college_code === college.college_code 
+        ? { ...c, isPublished: !c.isPublished } 
+        : c
+    ));
+
+    try {
+      const result = await togglePublishApi(college.college_code, !college.isPublished);
+      addToast(
+        `"${college.college_name}" ${result.isPublished ? 'published' : 'unpublished'}.`,
+        'success'
+      );
+      // We don't need to loadColleges() since we did it optimistically.
+      // But doing it ensures exact sync with backend if needed.
+    } catch (err) {
+      // Revert on failure
+      setColleges(previousState);
+      addToast(err.message || 'Failed to toggle publish state.', 'error');
+    }
+  };
+
   const openEdit = (code) => {
     setEditCode(code);
     setShowForm(true);
@@ -659,7 +695,7 @@ function Dashboard({ onLogout }) {
   };
 
   const withPhoto = colleges.filter((c) => c.photo_url).length;
-  const withDesc = colleges.filter((c) => c.description).length;
+  const published = colleges.filter((c) => c.isPublished).length;
 
   return (
     <div className="admin-shell">
@@ -705,10 +741,10 @@ function Dashboard({ onLogout }) {
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon yellow">📝</div>
+            <div className="stat-icon yellow">📢</div>
             <div className="stat-info">
-              <div className="stat-value">{withDesc}</div>
-              <div className="stat-label">With Description</div>
+              <div className="stat-value">{published}</div>
+              <div className="stat-label">Published</div>
             </div>
           </div>
         </div>
@@ -789,15 +825,21 @@ function Dashboard({ onLogout }) {
                       {c.affiliation || '—'}
                     </td>
                     <td>
-                      {c.description ? (
-                        <span className="badge badge-green">Complete</span>
+                      {c.isPublished ? (
+                        <span className="badge badge-green">Published</span>
                       ) : (
-                        <span className="badge badge-yellow">Basic</span>
+                        <span className="badge badge-yellow">Draft</span>
                       )}
                     </td>
                     <td>
                       <div className="college-row-actions">
                         <button
+                          className={`btn btn-ghost btn-icon ${c.isPublished ? 'btn-unpublish' : 'btn-publish'}`}
+                          title={c.isPublished ? 'Unpublish' : 'Publish'}
+                          onClick={() => handleTogglePublish(c)}
+                        >
+                          {c.isPublished ? '📤' : '📥'}
+                        </button>
                           className="btn btn-ghost btn-icon"
                           title="Edit"
                           onClick={() => openEdit(c.college_code)}

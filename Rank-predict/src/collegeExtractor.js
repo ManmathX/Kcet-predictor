@@ -38,3 +38,27 @@ export function getCollegeFromData(collegeCode) {
     city: row[3]
   };
 }
+
+// Cache for college cutoffs
+let collegeCutoffsCache = null;
+
+// Get all courses and cutoffs for a specific college
+export function getCollegeCutoffs(collegeCode) {
+  if (!collegeCutoffsCache) {
+    collegeCutoffsCache = new Map();
+    DATA.rows.forEach(row => {
+      const code = row[0];
+      if (!collegeCutoffsCache.has(code)) {
+        collegeCutoffsCache.set(code, []);
+      }
+      collegeCutoffsCache.get(code).push({
+        branchName: row[2],
+        branchGroup: row[4],
+        branchCode: row[6],
+        cutoffs: row[5] // The array of cutoffs
+      });
+    });
+  }
+  
+  return collegeCutoffsCache.get(collegeCode) || [];
+}

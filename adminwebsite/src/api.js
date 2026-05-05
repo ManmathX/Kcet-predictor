@@ -28,7 +28,10 @@ export async function verifyPassword(password) {
 export async function fetchColleges(search = '') {
   const params = new URLSearchParams();
   if (search) params.set('search', search);
-  const res = await fetch(`${API_BASE}/colleges?${params.toString()}`);
+  params.set('include_drafts', 'true');
+  const res = await fetch(`${API_BASE}/colleges?${params.toString()}`, {
+    headers: { 'x-admin-password': getAdminPassword() },
+  });
   if (!res.ok) throw new Error('Failed to fetch colleges');
   return res.json();
 }
@@ -81,6 +84,22 @@ export async function deleteCollege(code) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || 'Failed to delete college');
+  }
+  return res.json();
+}
+
+export async function togglePublish(code, isPublished) {
+  const res = await fetch(`${API_BASE}/colleges/${encodeURIComponent(code)}/publish`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': getAdminPassword(),
+    },
+    body: JSON.stringify({ isPublished }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to toggle publish state');
   }
   return res.json();
 }

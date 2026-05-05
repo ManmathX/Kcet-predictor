@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
 const collegeRoutes = require('./routes/colleges');
 
 const app = express();
@@ -10,13 +11,27 @@ const PORT = process.env.PORT || 5001;
 // ──────────────────────────────────────────────
 // Middleware
 // ──────────────────────────────────────────────
+app.use(helmet()); // Basic security headers
+
 const allowedOrigins = process.env.FRONTEND_URL 
   ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000']
-  : '*';
+  : []; // Empty array forces strict origin check if FRONTEND_URL is missing
+
+if (allowedOrigins.length === 0 && process.env.NODE_ENV === 'production') {
+  console.warn('⚠️ WARNING: FRONTEND_URL is not set in production. CORS will block all requests.');
+}
 
 app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests) 
+    // OR if origin is in the allowed list
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'x-admin-password'],
 }));
 app.use(express.json());

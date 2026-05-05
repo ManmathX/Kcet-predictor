@@ -1,12 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getCollegeById } from './db';
-import { getCollegeFromData } from './collegeExtractor';
+import { getCollegeFromData, getCollegeCutoffs } from './collegeExtractor';
 
 export default function CollegeDetail({ collegeCode, onClose }) {
   const [college, setCollege] = useState(null);
+  const [collegeCourses, setCollegeCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fromDatabase, setFromDatabase] = useState(false);
   const [activeTab, setActiveTab] = useState('about');
+  const [selectedCategory, setSelectedCategory] = useState(15); // Default GM
+
+  // Index → seatCode mapping from data.json seatCodes array:
+  // 0:1G 1:1K 2:1R 3:2AG 4:2AK 5:2AR 6:2BG 7:2BK 8:2BR
+  // 9:3AG 10:3AK 11:3AR 12:3BG 13:3BK 14:3BR 15:GM 16:GMK 17:GMP
+  // 18:GMR 19:NRI 20:OPN 21:OTH 22:SCG 23:SCK 24:SCR 25:STG 26:STK 27:STR
+  const CATEGORY_GROUPS = [
+    { label: 'General', options: [
+      { id: 15, label: 'GM (General Merit)' },
+      { id: 16, label: 'GMK (GM Kannada)' },
+      { id: 17, label: 'GMP (GM Priority)' },
+      { id: 18, label: 'GMR (GM Rural)' },
+    ]},
+    { label: 'Category 1', options: [
+      { id: 0, label: '1G (Cat-1 General)' },
+      { id: 1, label: '1K (Cat-1 Kannada)' },
+      { id: 2, label: '1R (Cat-1 Rural)' },
+    ]},
+    { label: 'Category 2A', options: [
+      { id: 3, label: '2AG (Cat-2A General)' },
+      { id: 4, label: '2AK (Cat-2A Kannada)' },
+      { id: 5, label: '2AR (Cat-2A Rural)' },
+    ]},
+    { label: 'Category 2B', options: [
+      { id: 6, label: '2BG (Cat-2B General)' },
+      { id: 7, label: '2BK (Cat-2B Kannada)' },
+      { id: 8, label: '2BR (Cat-2B Rural)' },
+    ]},
+    { label: 'Category 3A', options: [
+      { id: 9, label: '3AG (Cat-3A General)' },
+      { id: 10, label: '3AK (Cat-3A Kannada)' },
+      { id: 11, label: '3AR (Cat-3A Rural)' },
+    ]},
+    { label: 'Category 3B', options: [
+      { id: 12, label: '3BG (Cat-3B General)' },
+      { id: 13, label: '3BK (Cat-3B Kannada)' },
+      { id: 14, label: '3BR (Cat-3B Rural)' },
+    ]},
+    { label: 'SC / ST', options: [
+      { id: 22, label: 'SCG (SC General)' },
+      { id: 23, label: 'SCK (SC Kannada)' },
+      { id: 24, label: 'SCR (SC Rural)' },
+      { id: 25, label: 'STG (ST General)' },
+      { id: 26, label: 'STK (ST Kannada)' },
+      { id: 27, label: 'STR (ST Rural)' },
+    ]},
+    { label: 'Other', options: [
+      { id: 19, label: 'NRI' },
+      { id: 20, label: 'OPN (Open)' },
+      { id: 21, label: 'OTH (Other)' },
+    ]},
+  ];
 
   useEffect(() => {
     loadCollege();
@@ -15,27 +68,47 @@ export default function CollegeDetail({ collegeCode, onClose }) {
   async function loadCollege() {
     setLoading(true);
     try {
+      let dataToUse = null;
+      let isDb = false;
+
       // Try to get from MongoDB API first
       const dbData = await getCollegeById(collegeCode);
       if (dbData) {
-        setCollege(dbData);
-        setFromDatabase(true);
+        dataToUse = dbData;
+        isDb = true;
       } else {
         // Fallback to data.json
-        const jsonData = getCollegeFromData(collegeCode);
-        if (jsonData) {
-          setCollege(jsonData);
-          setFromDatabase(false);
-        }
+        dataToUse = getCollegeFromData(collegeCode);
       }
+
+      setCollege(dataToUse);
+      setFromDatabase(isDb);
+
+      // ── Course & Cutoff Loading Priority ──
+      // 1. Backend = Source of Truth (if courses are explicitly defined)
+      if (dataToUse && Array.isArray(dataToUse.courses) && dataToUse.courses.length > 0) {
+        setCollegeCourses(dataToUse.courses);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[Data Sync] Using BACKEND courses for ${collegeCode}`);
+        }
+      } else {
+        // 2. Frontend data.json = Temporary Fallback
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`[Data Sync] ⚠️ Backend missing courses for ${collegeCode}. Falling back to local data.json`);
+        }
+        const localCourses = getCollegeCutoffs(collegeCode) || [];
+        setCollegeCourses(localCourses);
+      }
+
     } catch (error) {
-      console.error('Error loading college:', error);
+      console.warn(`[Data Sync] 🚨 API request completely failed for ${collegeCode}. Forcing total fallback to local data.json.`);
       // Fallback to data.json on error
       const jsonData = getCollegeFromData(collegeCode);
-      if (jsonData) {
-        setCollege(jsonData);
-        setFromDatabase(false);
-      }
+      setCollege(jsonData);
+      setFromDatabase(false);
+      
+      const localCourses = getCollegeCutoffs(collegeCode) || [];
+      setCollegeCourses(localCourses);
     } finally {
       setLoading(false);
     }
@@ -88,9 +161,11 @@ export default function CollegeDetail({ collegeCode, onClose }) {
   
   const hasFacilities = fromDatabase && (college.hostel_facilities || college.other_facilities);
   const hasContact = fromDatabase && (college.contact_email || college.contact_phone);
+  const hasCourses = collegeCourses && collegeCourses.length > 0;
 
   const tabs = [
-    { id: 'about', label: 'About', icon: '📋' },
+    { id: 'about', label: 'Overview', icon: '📋' },
+    ...(hasCourses ? [{ id: 'courses', label: 'Courses & Cutoffs', icon: '📚' }] : []),
     ...(hasPlacement ? [{ id: 'placement', label: 'Placement', icon: '💼' }] : []),
     ...(hasFacilities || hasContact ? [{ id: 'facilities', label: 'Facilities & Contact', icon: '🏢' }] : []),
   ];
@@ -305,6 +380,87 @@ export default function CollegeDetail({ collegeCode, onClose }) {
               </div>
             )}
 
+            {activeTab === 'courses' && (
+              <div key="courses" className="cd-tab-content">
+                <div className="cd-section">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                    <h3 className="cd-section-title" style={{ marginBottom: 0 }}>📚 Courses & Cutoffs</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <label htmlFor="category-select" style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Category:</label>
+                      <select 
+                        id="category-select"
+                        className="cd-category-select"
+                        value={selectedCategory} 
+                        onChange={(e) => setSelectedCategory(Number(e.target.value))}
+                      >
+                        {CATEGORY_GROUPS.map(group => (
+                          <optgroup key={group.label} label={group.label}>
+                            {group.options.map(cat => (
+                              <option key={cat.id} value={cat.id}>
+                                {cat.label}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  
+                  {(() => {
+                    // Memoize sorted courses based on cutoffs for the selected category, or by name
+                    const sortedCourses = useMemo(() => {
+                      if (!collegeCourses) return [];
+                      return [...collegeCourses].sort((a, b) => {
+                        const cutA = a.cutoffs && a.cutoffs[selectedCategory];
+                        const cutB = b.cutoffs && b.cutoffs[selectedCategory];
+                        if (cutA && cutB) return cutA - cutB;
+                        if (cutA) return -1;
+                        if (cutB) return 1;
+                        return a.branchName.localeCompare(b.branchName);
+                      });
+                    }, [collegeCourses, selectedCategory]);
+
+                    const hasAnyCutoff = collegeCourses.some(c => c.cutoffs && c.cutoffs[selectedCategory] != null);
+                    return (
+                      <>
+                        <div className="cd-courses-list">
+                          {sortedCourses.map((course) => (
+                            <div key={`${course.branchCode}-${course.branchName}`} className="cd-course-card">
+                              <div className="cd-course-card__header">
+                                <h4 className="cd-course-card__name">
+                                  {course.branchName}
+                                </h4>
+                                <span className="cd-course-card__code">
+                                  {course.branchCode}
+                                </span>
+                              </div>
+                              <div className="cd-course-card__footer">
+                                <span className="cd-course-card__group">
+                                  {course.branchGroup}
+                                </span>
+                                <div className="cd-course-card__cutoff">
+                                  <span className="cd-course-card__cutoff-label">Cutoff Rank (KCET 2024):</span>
+                                  <span className={`cd-course-card__cutoff-value ${course.cutoffs && course.cutoffs[selectedCategory] != null ? 'has-value' : ''}`}>
+                                    {course.cutoffs && course.cutoffs[selectedCategory] != null ? course.cutoffs[selectedCategory].toLocaleString() : 'N/A'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {!hasAnyCutoff && (
+                          <div className="cd-courses-empty">
+                            <span>ℹ️</span>
+                            No cutoff data available for this category. Try selecting a different category above.
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
+
             {activeTab === 'placement' && (
               <div key="placement" className="cd-tab-content">
                 <div className="cd-section">
@@ -415,29 +571,71 @@ export default function CollegeDetail({ collegeCode, onClose }) {
 
             {activeTab === 'facilities' && (
               <div key="facilities" className="cd-tab-content">
-                {hasFacilities && (
-                  <div className="cd-section">
-                    <h3 className="cd-section-title">🏢 Campus Facilities</h3>
-                    {college.hostel_facilities && (
-                      <div className="cd-contact-item" style={{ marginBottom: '12px' }}>
-                        <span className="cd-contact-icon">🏠</span>
-                        <div>
-                          <div className="cd-contact-label">Hostel Facilities</div>
-                          <div className="cd-contact-value" style={{ color: '#e2e8f0', whiteSpace: 'pre-wrap' }}>{college.hostel_facilities}</div>
+                {hasFacilities && (() => {
+                  // Parse facility strings into individual items, merge, and deduplicate
+                  const parseFacilities = (str) => {
+                    if (!str) return [];
+                    return str
+                      .split(/[,\n;]+/)
+                      .map(s => s.trim())
+                      .filter(s => s.length > 0);
+                  };
+
+                  const hostelItems = parseFacilities(college.hostel_facilities);
+                  const otherItems = parseFacilities(college.other_facilities);
+
+                  // Build tagged items with source category
+                  const allFacilities = [
+                    ...hostelItems.map(f => ({ name: f, type: 'hostel' })),
+                    ...otherItems.map(f => ({ name: f, type: 'other' })),
+                  ];
+
+                  // Deduplicate by normalized name
+                  const normalize = (str) => str.toLowerCase().replace(/[-\s]/g, "");
+                  const seen = new Set();
+                  const uniqueFacilities = allFacilities.filter(f => {
+                    const key = normalize(f.name);
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                  });
+
+                  // Sort: hostel first, then alphabetical
+                  uniqueFacilities.sort((a, b) => {
+                    if (a.type !== b.type) {
+                      return a.type === 'hostel' ? -1 : 1;
+                    }
+                    return a.name.localeCompare(b.name);
+                  });
+
+                  const facilityIcon = (type) => type === 'hostel' ? '🏠' : '🎾';
+
+                  return (
+                    <div className="cd-section" aria-label="College facilities">
+                      <h3 className="cd-section-title">🏢 Campus Facilities</h3>
+                      {college.hostel_available && (
+                        <div className="cd-facility-badge">
+                          <span>✅</span> Hostel Available
                         </div>
-                      </div>
-                    )}
-                    {college.other_facilities && (
-                      <div className="cd-contact-item">
-                        <span className="cd-contact-icon">🎾</span>
-                        <div>
-                          <div className="cd-contact-label">Other Facilities</div>
-                          <div className="cd-contact-value" style={{ color: '#e2e8f0', whiteSpace: 'pre-wrap' }}>{college.other_facilities}</div>
+                      )}
+                      {uniqueFacilities.length > 0 ? (
+                        <div className="cd-facility-tags">
+                          {uniqueFacilities.map((f, i) => (
+                            <span key={i} className={`cd-facility-tag ${f.type}`}>
+                              <span className="cd-facility-tag__icon">{facilityIcon(f.type)}</span>
+                              {f.name}
+                            </span>
+                          ))}
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      ) : (
+                        <div className="cd-courses-empty">
+                          <span>ℹ️</span>
+                          Facility details are not available yet for this college.
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {hasContact && (
                   <div className="cd-section">

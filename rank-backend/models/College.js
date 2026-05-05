@@ -2,6 +2,13 @@ const mongoose = require('mongoose');
 
 const collegeSchema = new mongoose.Schema(
   {
+    // ── Publishing ──
+    isPublished: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
     // ── Core Identity ──
     college_code: {
       type: String,
@@ -66,6 +73,14 @@ const collegeSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    courses: [
+      {
+        name: { type: String, required: true },
+        code: { type: String, required: true },
+        group: { type: String, default: '' },
+        cutoffs: { type: mongoose.Schema.Types.Mixed, default: {} },
+      }
+    ],
 
     // ── Facilities ──
     hostel_facilities: {
