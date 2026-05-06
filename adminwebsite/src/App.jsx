@@ -110,8 +110,7 @@ const EMPTY_FORM = {
   contact_email: '',
   contact_phone: '',
   campus_area: '',
-  hostel_facilities: '',
-  other_facilities: '',
+  facilities: '',
   placement_rate: '',
   highest_package: '',
   average_package: '',
@@ -156,8 +155,7 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
           contact_email: data.contact_email || '',
           contact_phone: data.contact_phone || '',
           campus_area: data.campus_area || '',
-          hostel_facilities: data.hostel_facilities || '',
-          other_facilities: data.other_facilities || '',
+          facilities: data.facilities || data.hostel_facilities || data.other_facilities || '',
           placement_rate: data.placement_rate || '',
           highest_package: data.highest_package || '',
           average_package: data.average_package || '',
@@ -460,22 +458,12 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
               <h3 style={{ marginTop: '24px', color: 'var(--accent-1)', fontSize: '16px' }}>Facilities & Contact</h3>
 
               <div className="field">
-                <label>Hostel Facilities</label>
+                <label>Facilities</label>
                 <textarea
-                  placeholder="e.g. Separate boys and girls hostels, WiFi, Mess..."
-                  value={form.hostel_facilities}
-                  onChange={(e) => handleChange('hostel_facilities', e.target.value)}
-                  rows={2}
-                />
-              </div>
-
-              <div className="field">
-                <label>Other Facilities</label>
-                <textarea
-                  placeholder="e.g. Library, Sports Complex, Gym, Auditorium..."
-                  value={form.other_facilities}
-                  onChange={(e) => handleChange('other_facilities', e.target.value)}
-                  rows={2}
+                  placeholder="e.g. Hostel, Library, Sports Complex, Gym, Auditorium, WiFi, Mess..."
+                  value={form.facilities}
+                  onChange={(e) => handleChange('facilities', e.target.value)}
+                  rows={3}
                 />
               </div>
 

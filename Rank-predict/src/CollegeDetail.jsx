@@ -172,7 +172,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
     college.offers_made || college.total_internships || college.top_recruiters
   );
   
-  const hasFacilities = fromDatabase && (college.hostel_facilities || college.other_facilities);
+  const hasFacilities = fromDatabase && (college.facilities || college.hostel_facilities || college.other_facilities);
   const hasContact = fromDatabase && (college.contact_email || college.contact_phone);
   const hasCourses = collegeCourses && collegeCourses.length > 0;
 
@@ -572,7 +572,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
             {activeTab === 'facilities' && (
               <div key="facilities" className="cd-tab-content">
                 {hasFacilities && (() => {
-                  // Parse facility strings into individual items, merge, and deduplicate
+                  // Parse facility strings into individual items and deduplicate
                   const parseFacilities = (str) => {
                     if (!str) return [];
                     return str
@@ -581,34 +581,23 @@ export default function CollegeDetail({ collegeCode, onClose }) {
                       .filter(s => s.length > 0);
                   };
 
-                  const hostelItems = parseFacilities(college.hostel_facilities);
-                  const otherItems = parseFacilities(college.other_facilities);
-
-                  // Build tagged items with source category
-                  const allFacilities = [
-                    ...hostelItems.map(f => ({ name: f, type: 'hostel' })),
-                    ...otherItems.map(f => ({ name: f, type: 'other' })),
-                  ];
+                  // Use merged `facilities` field, with backward compat for old separate fields
+                  const facilityItems = college.facilities
+                    ? parseFacilities(college.facilities)
+                    : [...parseFacilities(college.hostel_facilities), ...parseFacilities(college.other_facilities)];
 
                   // Deduplicate by normalized name
                   const normalize = (str) => str.toLowerCase().replace(/[-\s]/g, "");
                   const seen = new Set();
-                  const uniqueFacilities = allFacilities.filter(f => {
-                    const key = normalize(f.name);
+                  const uniqueFacilities = facilityItems.filter(f => {
+                    const key = normalize(f);
                     if (seen.has(key)) return false;
                     seen.add(key);
                     return true;
                   });
 
-                  // Sort: hostel first, then alphabetical
-                  uniqueFacilities.sort((a, b) => {
-                    if (a.type !== b.type) {
-                      return a.type === 'hostel' ? -1 : 1;
-                    }
-                    return a.name.localeCompare(b.name);
-                  });
-
-                  const facilityIcon = (type) => type === 'hostel' ? '🏠' : '🎾';
+                  // Sort alphabetically
+                  uniqueFacilities.sort((a, b) => a.localeCompare(b));
 
                   return (
                     <div className="cd-section" aria-label="College facilities">
@@ -621,9 +610,9 @@ export default function CollegeDetail({ collegeCode, onClose }) {
                       {uniqueFacilities.length > 0 ? (
                         <div className="cd-facility-tags">
                           {uniqueFacilities.map((f, i) => (
-                            <span key={i} className={`cd-facility-tag ${f.type}`}>
-                              <span className="cd-facility-tag__icon">{facilityIcon(f.type)}</span>
-                              {f.name}
+                            <span key={i} className="cd-facility-tag">
+                              <span className="cd-facility-tag__icon">🏢</span>
+                              {f}
                             </span>
                           ))}
                         </div>

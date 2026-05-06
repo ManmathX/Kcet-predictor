@@ -83,11 +83,7 @@ const collegeSchema = new mongoose.Schema(
     ],
 
     // ── Facilities ──
-    hostel_facilities: {
-      type: String,
-      default: '',
-    },
-    other_facilities: {
+    facilities: {
       type: String,
       default: '',
     },
