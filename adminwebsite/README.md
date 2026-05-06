@@ -1,16 +1,39 @@
-# React + Vite
+# KCET Predictor Admin Panel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A management interface for the KCET Predictor 2.0 database. This portal allows administrators to view, edit, create, and publish colleges to the main predictor website.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **College Dashboard**: Search and filter through the complete list of colleges.
+- **Draft/Publish Workflow**: Toggle college visibility on the live site.
+- **Real-time Editing**: Update college details, cutoff ranks, and placement info instantly.
+- **Secure Access**: Protected by an administrative password (synced with the backend).
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Expanding the ESLint configuration
+2. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Set `VITE_API_URL` to point to your running backend (e.g., `http://localhost:5001/api`).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Development
+
+Run the development server:
+```bash
+npm run dev
+```
+
+The admin portal will be available at `http://localhost:5174` (or the port shown in your terminal).
+
+## Production
+
+Build the application:
+```bash
+npm run build
+```
+
+The output will be in the `dist` folder, ready for static hosting.

@@ -1,55 +1,35 @@
-# Toppermode KCET Predictor
+# KCET Predictor 2025
 
-Toppermode KCET Predictor is a React-based web application that helps Karnataka Common Entrance Test (KCET) aspirants predict their engineering college admission chances based on the official 2025 third-round ROK cutoff dataset.
+A high-performance rank predictor for the Karnataka Common Entrance Test (KCET). This tool helps students predict potential colleges based on their aggregate rank, with data from 2025 Round 3 cutoffs.
 
-## 🚀 Features
+## Features
 
-- **Score & Rank Prediction**: Estimate your rank from your expected KCET score, or directly input your known official rank.
-- **Advanced Filtering**: Filter options by seat type/category, branch groups (e.g., CSE, ECE), and cities.
-- **Admissions Categorization**: Programs are intelligently classified into **Safe**, **Likely**, **Borderline**, or **Reach** based on your rank and historical cutoffs.
-- **College Shortlisting**: Save and track your target colleges in a personal shortlist.
-- **PDF Export**: Generate a downloadable, professional PDF report of your saved college shortlist.
-- **User Authentication**: Secure Google Sign-In integration for profile management.
+- **Rank-Based Prediction**: Filter colleges by category, branch, and aggregate rank.
+- **College Search**: Direct access to details for over 220+ colleges.
+- **Detailed Information**: View college photos, established year, affiliation, placement highlights, and campus facilities.
+- **Courses & Cutoffs**: High-density grid view of all branches with their closing ranks.
+- **Mobile Responsive**: Fully optimized for phones and tablets with horizontal scrolling navigation.
 
-## 🛠️ Tech Stack
+## Setup
 
-- **Frontend Framework**: React 19 + Vite
-- **Styling**: Vanilla CSS
-- **PDF Generation**: `jspdf` & `jspdf-autotable`
-- **Data**: Local JSON dataset containing KCET cutoffs, college codes, and branch data.
-
-## ⚙️ Getting Started
-
-### Prerequisites
-
-Ensure you have Node.js installed (v18+ recommended).
-
-### Installation
-
-1. Clone the repository and navigate to the project folder:
-   ```bash
-   cd Rank-predict
-   ```
-
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+2. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Set `VITE_API_URL` to point to your backend API.
 
-4. Open your browser and navigate to `http://localhost:5173` (or the port provided by Vite).
+## Development
 
-## 📂 Project Structure
+Run the predictor locally:
+```bash
+npm run dev
+```
 
-- `src/App.jsx`: Main application logic, including prediction algorithms and UI components.
-- `src/index.css`: Styles for the application.
-- `src/data.json`: The core dataset containing the KCET cutoffs, colleges, courses, and seat types.
-- `legacy.html`: Previous version reference.
+The app will be available at `http://localhost:5173`.
 
-## 📝 Disclaimer
+## Data Source
 
-This tool is designed for educational and guidance purposes only. The predictions are based on historical 2025 third-round cutoffs and do not guarantee actual admission.
+The initial data is derived from `data.json` (extracted from the official 2025 Round 3 Cutoffs). The app prioritizes live data from the backend API when available.
