@@ -395,7 +395,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
 
             {activeTab === 'courses' && (
               <div key="courses" className="cd-tab-content">
-                <div className="cd-section">
+                <div className="cd-section cd-section-table">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
                     <h3 className="cd-section-title" style={{ marginBottom: 0 }}>📚 Courses & Cutoffs</h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -419,44 +419,35 @@ export default function CollegeDetail({ collegeCode, onClose }) {
                     </div>
                   </div>
                   
-                  {(() => {
-                    const hasAnyCutoff = collegeCourses.some(c => c.cutoffs && c.cutoffs[selectedCategory] != null);
-                    return (
-                      <>
-                        <div className="cd-courses-list">
-                          {sortedCourses.map((course) => (
-                            <div key={`${course.branchCode}-${course.branchName}`} className="cd-course-card">
-                              <div className="cd-course-card__header">
-                                <h4 className="cd-course-card__name">
-                                  {course.branchName}
-                                </h4>
-                                <span className="cd-course-card__code">
-                                  {course.branchCode}
-                                </span>
-                              </div>
-                              <div className="cd-course-card__footer">
-                                <span className="cd-course-card__group">
-                                  {course.branchGroup}
-                                </span>
-                                <div className="cd-course-card__cutoff">
-                                  <span className="cd-course-card__cutoff-label">Cutoff Rank (KCET 2024):</span>
-                                  <span className={`cd-course-card__cutoff-value ${course.cutoffs && course.cutoffs[selectedCategory] != null ? 'has-value' : ''}`}>
-                                    {course.cutoffs && course.cutoffs[selectedCategory] != null ? course.cutoffs[selectedCategory].toLocaleString() : 'N/A'}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        {!hasAnyCutoff && (
-                          <div className="cd-courses-empty">
-                            <span>ℹ️</span>
-                            No cutoff data available for this category. Try selecting a different category above.
+                  <div className="cd-grid-table">
+                    <div className="cd-grid-header">
+                      <span>Branch Name</span>
+                      <span style={{ textAlign: 'right' }}>Closing Rank</span>
+                    </div>
+                    <div className="cd-grid-subheader">
+                      4-Year B.E./B.Tech. Course
+                    </div>
+                    {sortedCourses.map((course) => (
+                      <div key={`${course.branchCode}-${course.branchName}`} className="cd-grid-row">
+                        <div className="cd-grid-cell branch-name">
+                          <div className="branch-main-info">
+                            <span className="branch-title">{course.branchName}</span>
+                            <span className="branch-code">{course.branchCode}</span>
                           </div>
-                        )}
-                      </>
-                    );
-                  })()}
+                          <span className="branch-group">{course.branchGroup}</span>
+                        </div>
+                        <div className={`cd-grid-cell rank ${course.cutoffs && course.cutoffs[selectedCategory] != null ? 'has-value' : ''}`}>
+                          {course.cutoffs && course.cutoffs[selectedCategory] != null ? course.cutoffs[selectedCategory].toLocaleString() : 'N/A'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {!collegeCourses.some(c => c.cutoffs && c.cutoffs[selectedCategory] != null) && (
+                    <div className="cd-courses-empty">
+                      <span>ℹ️</span>
+                      No cutoff data available for this category. Try selecting a different category above.
+                    </div>
+                  )}
                 </div>
               </div>
             )}
