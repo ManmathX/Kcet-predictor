@@ -130,6 +130,7 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(!!editCode);
+  const [publishAction, setPublishAction] = useState(null);
   const isEdit = !!editCode;
 
   useEffect(() => {
@@ -191,6 +192,10 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
       ...form,
       established_year: form.established_year ? Number(form.established_year) : null,
     };
+
+    if (publishAction !== null) {
+      payload.isPublished = publishAction;
+    }
 
     try {
       if (isEdit) {
@@ -455,6 +460,16 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
                 </div>
               </div>
 
+              <div className="field" style={{ marginTop: '10px' }}>
+                <label>Placement Info (Detailed)</label>
+                <textarea
+                  placeholder="Paste large placement data here for editing and cleaning..."
+                  value={form.placement_info}
+                  onChange={(e) => handleChange('placement_info', e.target.value)}
+                  rows={8}
+                />
+              </div>
+
               <h3 style={{ marginTop: '24px', color: 'var(--accent-1)', fontSize: '16px' }}>Facilities & Contact</h3>
 
               <div className="field">
@@ -546,12 +561,27 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
               </label>
             </div>
 
-            <div className="modal-footer">
+            <div className="modal-footer" style={{ display: 'flex', gap: '12px' }}>
               <button className="btn btn-secondary" type="button" onClick={onClose}>
                 Cancel
               </button>
-              <button className="btn btn-primary" type="submit" disabled={loading}>
-                {loading ? 'Saving...' : isEdit ? 'Update College' : 'Create College'}
+              <div style={{ flex: 1 }} />
+              <button 
+                className="btn btn-secondary" 
+                type="submit" 
+                onClick={() => setPublishAction(false)}
+                disabled={loading}
+              >
+                Save as Draft
+              </button>
+              <button 
+                className="btn btn-primary" 
+                style={{ background: 'var(--green)', borderColor: 'var(--green)' }} 
+                type="submit" 
+                onClick={() => setPublishAction(true)}
+                disabled={loading}
+              >
+                {isEdit && form.isPublished ? 'Update & Keep Published' : 'Save & Publish'}
               </button>
             </div>
           </form>

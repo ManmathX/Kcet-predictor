@@ -8,12 +8,13 @@ export function extractUniqueColleges() {
     const collegeCode = row[0];
     const collegeName = row[1];
     const city = row[3];
+    const address = row[7] || '';
     
     if (!collegesMap.has(collegeCode)) {
       collegesMap.set(collegeCode, {
         college_code: collegeCode,
         college_name: collegeName,
-        location: city,
+        location: address ? `${address}, ${city}` : city,
         city: city,
         description: null,
         photo_url: null,
@@ -35,6 +36,7 @@ export function getCollegeFromData(collegeCode) {
   return {
     college_code: row[0],
     college_name: row[1],
+    location: row[7] ? `${row[7]}, ${row[3]}` : row[3],
     city: row[3]
   };
 }

@@ -112,15 +112,15 @@ export default function CollegeDetail({ collegeCode, onClose }) {
   if (loading) {
     return (
       <div className="auth-overlay" style={{ zIndex: 150 }}>
-        <div className="auth-shell">
-          <div className="panel college-detail-panel" style={{ maxWidth: 900, padding: 0, overflow: 'hidden' }}>
-            <div className="cd-skeleton-hero" />
+        <div className="auth-shell" style={{ padding: 0, width: '100vw', height: '100vh' }}>
+          <div className="panel college-detail-panel" style={{ width: '100%', height: '100%', maxWidth: 'none', borderRadius: 0, padding: 0, overflow: 'hidden' }}>
+            <div className="cd-skeleton-hero" style={{ height: '350px' }} />
             <div style={{ padding: '32px 40px' }}>
-              <div className="cd-skeleton-line" style={{ width: '60%', height: 28, marginBottom: 12 }} />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                <div className="cd-skeleton-line" style={{ height: 70, borderRadius: 10 }} />
-                <div className="cd-skeleton-line" style={{ height: 70, borderRadius: 10 }} />
-                <div className="cd-skeleton-line" style={{ height: 70, borderRadius: 10 }} />
+              <div className="cd-skeleton-line" style={{ width: '60%', height: 36, marginBottom: 16 }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                <div className="cd-skeleton-line" style={{ height: 80, borderRadius: 12 }} />
+                <div className="cd-skeleton-line" style={{ height: 80, borderRadius: 12 }} />
+                <div className="cd-skeleton-line" style={{ height: 80, borderRadius: 12 }} />
               </div>
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
   if (!college) {
     return (
       <div className="auth-overlay" style={{ zIndex: 150 }}>
-        <div className="auth-shell">
+        <div className="auth-shell" style={{ padding: 0, width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div className="panel" style={{ maxWidth: 500, padding: 48, textAlign: 'center' }}>
             <h2 style={{ fontSize: 20, marginBottom: 8 }}>College Not Found</h2>
             <button className="primary-btn" onClick={onClose}>Close</button>
@@ -158,19 +158,19 @@ export default function CollegeDetail({ collegeCode, onClose }) {
 
   return (
     <div className="auth-overlay" style={{ zIndex: 150 }} onClick={onClose}>
-      <div className="auth-shell">
+      <div className="auth-shell" style={{ padding: 0, width: '100vw', height: '100vh' }}>
         <div
           className="panel college-detail-panel"
-          style={{ maxWidth: 900, padding: 0, overflow: 'hidden', position: 'relative' }}
+          style={{ width: '100%', height: '100%', maxWidth: 'none', borderRadius: 0, padding: 0, overflowY: 'auto', position: 'relative' }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
-          <button className="rating-close" onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, background: 'rgba(0,0,0,0.5)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#fff' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <button className="rating-close" onClick={onClose} style={{ position: 'fixed', top: 24, right: 24, zIndex: 100, background: 'rgba(0,0,0,0.6)', borderRadius: '50%', width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', color: '#fff', backdropFilter: 'blur(10px)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
 
           {/* Hero */}
-          <div className="cd-hero">
+          <div className="cd-hero" style={{ height: '350px' }}>
             {college.photo_url ? <img src={college.photo_url} alt={college.college_name} /> : <div className="cd-hero-placeholder"><span>🏛</span></div>}
             <div className="cd-hero-gradient" />
           </div>
@@ -178,17 +178,11 @@ export default function CollegeDetail({ collegeCode, onClose }) {
           <div className="cd-content">
             <div className="cd-header">
               <h1 className="cd-title">{college.college_name}</h1>
-              <p className="cd-location">📍 {college.location || college.city}</p>
-            </div>
-
-            <div className="cd-stats">
-              {college.established_year && (
-                <div className="cd-stat-card"><div className="cd-stat-icon">🗓</div><div><div className="cd-stat-label">Established</div><div className="cd-stat-value">{college.established_year}</div></div></div>
-              )}
-              {college.affiliation && (
-                <div className="cd-stat-card"><div className="cd-stat-icon">🎓</div><div><div className="cd-stat-label">Affiliation</div><div className="cd-stat-value">{college.affiliation}</div></div></div>
-              )}
-              <div className="cd-stat-card"><div className="cd-stat-icon">🔢</div><div><div className="cd-stat-label">College Code</div><div className="cd-stat-value">{college.college_code}</div></div></div>
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', color: '#94a3b8', fontSize: '15px' }}>
+                <span className="cd-location" style={{ margin: 0 }}>📍 {college.location || college.city}</span>
+                {college.established_year && <span className="cd-location" style={{ margin: 0 }}>🗓 Est. {college.established_year}</span>}
+                <span className="cd-location" style={{ margin: 0 }}>🔢 Code: {college.college_code}</span>
+              </div>
             </div>
 
             <div className="cd-tabs">
@@ -251,13 +245,33 @@ export default function CollegeDetail({ collegeCode, onClose }) {
               <div className="cd-tab-content">
                 <div className="cd-section">
                   <h3 className="cd-section-title">💼 Placement Overview</h3>
-                  <div className="cd-stats">
+                  
+                  <div className="cd-stats" style={{ marginBottom: '24px' }}>
                     {college.highest_package && (
                       <div className="cd-stat-card"><div className="cd-stat-icon">💰</div><div><div className="cd-stat-label">Highest</div><div className="cd-stat-value">{college.highest_package}</div></div></div>
                     )}
                     {college.average_package && (
                       <div className="cd-stat-card"><div className="cd-stat-icon">📊</div><div><div className="cd-stat-label">Average</div><div className="cd-stat-value">{college.average_package}</div></div></div>
                     )}
+                  </div>
+
+                  <div 
+                    className="cd-placement-info-box" 
+                    style={{ 
+                      minHeight: '200px',
+                      padding: '24px', 
+                      background: 'rgba(15, 23, 42, 0.6)', 
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '16px', 
+                      whiteSpace: 'pre-wrap', 
+                      fontSize: '16px', 
+                      lineHeight: '1.8', 
+                      color: '#e2e8f0',
+                      boxShadow: 'inset 0 2px 20px rgba(0,0,0,0.3)',
+                      overflowY: 'auto'
+                    }}
+                  >
+                    {college.placement_info ? college.placement_info : "Detailed placement information is currently being updated. Please check back later for comprehensive statistics on companies visited, branchwise placements, and more."}
                   </div>
                 </div>
               </div>
