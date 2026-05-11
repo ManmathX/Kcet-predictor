@@ -6,7 +6,7 @@
 ![Vite](https://img.shields.io/badge/vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
 Predictors 2.0 is a Next-Generation **Karnataka Common Entrance Test (KCET)** rank predictor and college research tool. It provides students with a comprehensive platform to discover engineering college matches based on their KCET rank, category, and course preferences using 2025 Round 3 cutoff data.
-
+ok
 ## 🏗 System Architecture
 
 The project is divided into three main services:
