@@ -11,6 +11,7 @@ import {
   clearAdminPassword,
   isLoggedIn,
 } from './api';
+import RichTextEditor from './RichTextEditor';
 import './index.css';
 
 /* ═══════════════════════════════════════════════
@@ -295,11 +296,11 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
 
               <div className="field">
                 <label>Description</label>
-                <textarea
-                  placeholder="Brief description of the college, its history, highlights..."
+                <RichTextEditor
                   value={form.description}
-                  onChange={(e) => handleChange('description', e.target.value)}
-                  rows={4}
+                  onChange={(html) => handleChange('description', html)}
+                  placeholder="Brief description of the college, its history, highlights..."
+                  minHeight={120}
                 />
               </div>
 
@@ -369,14 +370,102 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
 
               <h3 style={{ marginTop: '24px', color: 'var(--accent-1)', fontSize: '16px' }}>Placement Details (Optional)</h3>
               
-              <div className="field" style={{ marginTop: '24px' }}>
-                <label>Placement Details (Optional)</label>
-                <textarea
-                  placeholder="Write or paste all placement details here (e.g., packages, companies, rates, branch-wise data...)"
+              <div className="field-row-3">
+                <div className="field">
+                  <label>Highest Package</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 50 LPA"
+                    value={form.highest_package}
+                    onChange={(e) => handleChange('highest_package', e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <label>Average Package</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 8.5 LPA"
+                    value={form.average_package}
+                    onChange={(e) => handleChange('average_package', e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <label>Median Package</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 6.5 LPA"
+                    value={form.median_package}
+                    onChange={(e) => handleChange('median_package', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="field-row-3" style={{ marginTop: '10px' }}>
+                <div className="field">
+                  <label>Placement Rate</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 95%"
+                    value={form.placement_rate}
+                    onChange={(e) => handleChange('placement_rate', e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <label>Companies Visited</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 250+"
+                    value={form.companies_visited}
+                    onChange={(e) => handleChange('companies_visited', e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <label>Offers Made</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 1500+"
+                    value={form.offers_made}
+                    onChange={(e) => handleChange('offers_made', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="field" style={{ marginTop: '10px' }}>
+                <label>Top Recruiters</label>
+                <input
+                  type="text"
+                  placeholder="e.g. TCS, Infosys, Amazon, Microsoft"
+                  value={form.top_recruiters}
+                  onChange={(e) => handleChange('top_recruiters', e.target.value)}
+                />
+              </div>
+
+              <div className="field" style={{ marginTop: '10px' }}>
+                <label>Branchwise Placement Data</label>
+                <RichTextEditor
+                  value={form.branchwise_placement}
+                  onChange={(html) => handleChange('branchwise_placement', html)}
+                  placeholder="e.g. CSE: 98%, ECE: 92%, ME: 80%"
+                  minHeight={100}
+                />
+              </div>
+              <div className="field" style={{ marginTop: '10px' }}>
+                <label>Total Internships</label>
+                <RichTextEditor
+                  value={form.total_internships}
+                  onChange={(html) => handleChange('total_internships', html)}
+                  placeholder="e.g. 500+ students secured internships"
+                  minHeight={100}
+                />
+              </div>
+
+              <div className="field" style={{ marginTop: '10px' }}>
+                <label>Placement Info (Detailed)</label>
+                <RichTextEditor
                   value={form.placement_info}
-                  onChange={(e) => handleChange('placement_info', e.target.value)}
-                  rows={15}
-                  style={{ fontSize: '15px', lineHeight: '1.6', fontFamily: 'inherit' }}
+                  onChange={(html) => handleChange('placement_info', html)}
+                  placeholder="Paste large placement data here for editing and cleaning..."
+                  minHeight={200}
                 />
                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
                   💡 Tip: You can include highest/average packages, companies, and branch-wise stats all in this one box.
@@ -387,11 +476,11 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
 
               <div className="field">
                 <label>Facilities</label>
-                <textarea
-                  placeholder="e.g. Hostel, Library, Sports Complex, Gym, Auditorium, WiFi, Mess..."
+                <RichTextEditor
                   value={form.facilities}
-                  onChange={(e) => handleChange('facilities', e.target.value)}
-                  rows={3}
+                  onChange={(html) => handleChange('facilities', html)}
+                  placeholder="e.g. Hostel, Library, Sports Complex, Gym, Auditorium, WiFi, Mess..."
+                  minHeight={120}
                 />
               </div>
 

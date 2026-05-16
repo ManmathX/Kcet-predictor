@@ -2,6 +2,26 @@ import { useState, useEffect, useMemo } from 'react';
 import { getCollegeById } from './db';
 import { getCollegeFromData, getCollegeCutoffs } from './collegeExtractor';
 
+/**
+ * Checks if a string contains HTML tags.
+ * Used to decide between dangerouslySetInnerHTML and plain text rendering.
+ */
+function containsHtml(str) {
+  if (!str) return false;
+  return /<[a-z][\s\S]*>/i.test(str);
+}
+
+/**
+ * Renders content as HTML if it contains tags, otherwise as plain text.
+ */
+function RichContent({ content, className, style }) {
+  if (!content) return null;
+  if (containsHtml(content)) {
+    return <div className={className} style={style} dangerouslySetInnerHTML={{ __html: content }} />;
+  }
+  return <p className={className} style={style}>{content}</p>;
+}
+
 export default function CollegeDetail({ collegeCode, onClose }) {
   const [college, setCollege] = useState(null);
   const [collegeCourses, setCollegeCourses] = useState([]);
@@ -198,7 +218,7 @@ export default function CollegeDetail({ collegeCode, onClose }) {
                 {college.description && (
                   <div className="cd-section">
                     <h3 className="cd-section-title">About the College</h3>
-                    <p className="cd-section-text">{college.description}</p>
+                    <RichContent content={college.description} className="cd-section-text" />
                   </div>
                 )}
               </div>
@@ -262,7 +282,11 @@ export default function CollegeDetail({ collegeCode, onClose }) {
                       overflowY: 'auto'
                     }}
                   >
-                    {college.placement_info || "Detailed placement information is currently being updated. Please check back later for comprehensive statistics on companies visited, branchwise placements, and more."}
+                    {college.placement_info ? (
+                      containsHtml(college.placement_info)
+                        ? <div dangerouslySetInnerHTML={{ __html: college.placement_info }} />
+                        : college.placement_info
+                    ) : "Detailed placement information is currently being updated. Please check back later for comprehensive statistics on companies visited, branchwise placements, and more."}
                   </div>
                 </div>
               </div>
@@ -272,11 +296,15 @@ export default function CollegeDetail({ collegeCode, onClose }) {
               <div className="cd-tab-content">
                 <div className="cd-section">
                   <h3 className="cd-section-title">🏢 Campus Facilities</h3>
-                  <div className="cd-facility-tags">
-                    {(college.facilities || "").split(/[,\n]+/).filter(f => f.trim()).map((f, i) => (
-                      <span key={i} className="cd-facility-tag">🏢 {f.trim()}</span>
-                    ))}
-                  </div>
+                {containsHtml(college.facilities) ? (
+                    <div className="cd-section-text" dangerouslySetInnerHTML={{ __html: college.facilities }} />
+                  ) : (
+                    <div className="cd-facility-tags">
+                      {(college.facilities || "").split(/[,\n]+/).filter(f => f.trim()).map((f, i) => (
+                        <span key={i} className="cd-facility-tag">🏢 {f.trim()}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
