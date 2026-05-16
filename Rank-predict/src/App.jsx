@@ -90,7 +90,7 @@ const DISPLAY_STEP = 80;
 
 // Replace this URL with your deployed Google Apps Script web app URL.
 // See google-apps-script.js for setup instructions.
-const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxPDhdSJJGnG6EIqD_TpeO000Jgdy8ZkOtVWxWw6h3FpuXxFOB_bwgdeRSa0dCvguc/exec';
+const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzRAUp0DmDne6Nizx_OMIsRrx5Aif8O8uJHcBpSXkg4W9qD2GHrvmS1gI1Wkk9Id7vI/exec';
 
 // Report sheet — for users to flag incorrect college data.
 // Deploy google-apps-script-report.js to the report sheet and paste the URL here.
@@ -105,10 +105,10 @@ function createGoogleNonce() {
 }
 
 /**
- * Sends profile data (name, phone, class12%, email) to the Google Sheet
+ * Sends profile data (name, phone, pcmMarks, class12%, email) to the Google Sheet
  * via the deployed Apps Script web app.
  */
-async function sendProfileToSheet({ name, phone, class12, email, location }) {
+async function sendProfileToSheet({ name, phone, pcmMarks, class12, email, location }) {
   if (!GOOGLE_SHEET_WEBHOOK || GOOGLE_SHEET_WEBHOOK === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
     console.warn('[Sheet] Google Sheet webhook URL is not configured. Skipping sheet save.');
     return;
@@ -117,6 +117,7 @@ async function sendProfileToSheet({ name, phone, class12, email, location }) {
     const params = new URLSearchParams({
       name: name || '',
       phone: phone || '',
+      pcmMarks: pcmMarks !== undefined && pcmMarks !== null ? String(pcmMarks) : '',
       class12: class12 !== undefined && class12 !== null ? String(class12) : '',
       email: email || '',
       location: location || '',
@@ -1766,10 +1767,11 @@ export default function App() {
         allProfiles[nextProfile.googleId] = nextProfile;
         localStorage.setItem(ALL_PROFILES_KEY, JSON.stringify(allProfiles));
 
-        // Save name, phone, class12%, email, and location to Google Sheet
+        // Save name, phone, pcmMarks, class12%, email, and location to Google Sheet
         sendProfileToSheet({
           name: nextProfile.name,
           phone: nextProfile.phone,
+          pcmMarks: nextProfile.pcmMarks,
           class12: nextProfile.class12,
           email: nextProfile.email,
           location: nextProfile.location,

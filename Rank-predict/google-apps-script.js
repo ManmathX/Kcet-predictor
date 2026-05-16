@@ -28,9 +28,9 @@ function doPost(e) {
 
     // Add headers if the sheet is empty
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Timestamp', 'Name', 'Phone Number', 'Class 12 %', 'Email', 'Location']);
+      sheet.appendRow(['Timestamp', 'Name', 'Phone Number', 'PCM 12 (out of 300)', 'Class 12 %', 'Email', 'Location']);
       // Bold the header row
-      sheet.getRange(1, 1, 1, 6).setFontWeight('bold');
+      sheet.getRange(1, 1, 1, 7).setFontWeight('bold');
     }
 
     // Append the new row
@@ -38,6 +38,7 @@ function doPost(e) {
       new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
       data.name || '',
       data.phone || '',
+      data.pcmMarks !== undefined && data.pcmMarks !== null ? data.pcmMarks : '',
       data.class12 !== undefined && data.class12 !== null ? data.class12 : '',
       data.email || '',
       data.location || '',
@@ -70,14 +71,15 @@ function doGet(e) {
 
     // Add headers if the sheet is empty
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Timestamp', 'Name', 'Phone Number', 'Class 12 %', 'Email', 'Location']);
-      sheet.getRange(1, 1, 1, 6).setFontWeight('bold');
+      sheet.appendRow(['Timestamp', 'Name', 'Phone Number', 'PCM 12 (out of 300)', 'Class 12 %', 'Email', 'Location']);
+      sheet.getRange(1, 1, 1, 7).setFontWeight('bold');
     }
 
     sheet.appendRow([
       new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
       params.name || '',
       params.phone || '',
+      params.pcmMarks || '',
       params.class12 || '',
       params.email || '',
       params.location || '',
