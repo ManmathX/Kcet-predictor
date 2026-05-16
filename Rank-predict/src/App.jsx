@@ -645,9 +645,11 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
   const { chance, cutoff, key } = item;
   const isSaved = saved.has(key);
   const marginText =
-    chance.diff >= 0
-      ? `${formatNumber(chance.diff, 2)} rank buffer`
-      : `${formatNumber(Math.abs(chance.diff), 2)} ranks above cutoff`;
+    chance.type === 'none'
+      ? 'Round 3 Data'
+      : (chance.diff >= 0
+        ? `${formatNumber(chance.diff, 2)} rank buffer`
+        : `${formatNumber(Math.abs(chance.diff), 2)} ranks above cutoff`);
 
   const handleReport = async () => {
     if (!reportReason.trim()) return;
@@ -696,15 +698,17 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
           <div className="cutoff-number">{formatNumber(cutoff, 2)}</div>
           <div className="side-label" style={{ textTransform: 'uppercase', fontSize: '10px' }}>2025 CUTOFF RANK</div>
         </div>
-        <div className="confidence-block" style={{ flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', textTransform: 'uppercase', fontSize: '10px', color: 'var(--muted)' }}>
-            <span className="side-label" style={{ margin: 0 }}>YOUR CHANCE</span>
-            <strong style={{ color: '#fbbf24' }}>{chance.pct}%</strong>
+        {chance.type !== 'none' && (
+          <div className="confidence-block" style={{ flex: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', textTransform: 'uppercase', fontSize: '10px', color: 'var(--muted)' }}>
+              <span className="side-label" style={{ margin: 0 }}>YOUR CHANCE</span>
+              <strong style={{ color: '#fbbf24' }}>{chance.pct}%</strong>
+            </div>
+            <div className="bar" aria-label={`${chance.pct}% confidence`} style={{ marginTop: 0 }}>
+              <span style={{ width: `${chance.pct}%` }} />
+            </div>
           </div>
-          <div className="bar" aria-label={`${chance.pct}% confidence`} style={{ marginTop: 0 }}>
-            <span style={{ width: `${chance.pct}%` }} />
-          </div>
-        </div>
+        )}
       </div>
       <div className="row-actions">
         <button
@@ -789,7 +793,9 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
   const [city, setCity] = useState('all');
   const [searchInput, setSearchInput] = useState('');
   const [quickSearch, setQuickSearch] = useState('');
+  const [quickSearchInput, setQuickSearchInput] = useState('');
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [validationErrors, setValidationErrors] = useState(new Set());
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -885,12 +891,32 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
 
   const runPrediction = (e) => {
     if (e) e.preventDefault();
+    setValidationErrors(new Set());
     try {
       let rank;
       let prediction = null;
       if (mode === 'rank') {
+        if (!rankInput) {
+          // If nothing is put in input and show colleges is clicked then we show all colleges sorted on rank
+          setEstimatedRank('all');
+          setRankPrediction(null);
+          setAggregateBreakdown(null);
+          setRankRange(null);
+          setDisplayLimit(DISPLAY_STEP);
+          setPredictionId(prev => prev + 1);
+          setHasInteractedBranch(false);
+          setHasInteractedCourse(false);
+          
+          setTimeout(() => {
+            document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+          return;
+        }
         rank = Number(rankInput);
-        if (!Number.isFinite(rank) || rank < 1) throw new Error('Enter a valid KCET Rank.');
+        if (!Number.isFinite(rank) || rank < 1) {
+          setValidationErrors(new Set(['rankInput']));
+          throw new Error('Enter a valid KCET Rank.');
+        }
         rank = Math.round(rank);
         // For direct rank entry, compute percentile and bands manually
         prediction = {
@@ -903,12 +929,24 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
         };
         setAggregateBreakdown(null);
       } else if (mode === 'aggregate') {
+        const errors = new Set();
+        if (!pcmMarksInput) errors.add('pcmMarksInput');
+        if (!kcetScoreInput) errors.add('kcetScoreInput');
+        
+        if (errors.size > 0) {
+          setValidationErrors(errors);
+          setEstimatedRank(null);
+          return; // No college should be shown and fields should have red border
+        }
+
         const kcetScore = Number(kcetScoreInput);
         const pcmMarks = Number(pcmMarksInput);
         if (!Number.isFinite(kcetScore) || kcetScore < 0 || kcetScore > KCET_MAX) {
+          setValidationErrors(new Set(['kcetScoreInput']));
           throw new Error(`Enter a valid KCET score between 0 and ${KCET_MAX}.`);
         }
         if (!Number.isFinite(pcmMarks) || pcmMarks < 0 || pcmMarks > PCM_MAX) {
+          setValidationErrors(new Set(['pcmMarksInput']));
           throw new Error(`Enter valid PCM marks between 0 and ${PCM_MAX}.`);
         }
         const { kcetPct, pcmPct, aggregatePct } = computeAggregate(kcetScore, pcmMarks);
@@ -945,13 +983,20 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
   const buildResults = useCallback(
     (ignoreChanceFilter = false) => {
       if (!estimatedRank) return [];
+      const isShowAll = estimatedRank === 'all';
       const search = normalize([searchInput, quickSearch].filter(Boolean).join(' '));
 
       return DATA.rows
         .map((row) => {
           const cutoff = getCutoff(row, seat);
-          const chance = classify(estimatedRank, cutoff);
-          if (!chance) return null;
+          let chance;
+          if (isShowAll) {
+            // For "Show All" mode, we provide a placeholder chance object
+            chance = { type: 'none', label: '-', pct: 0, diff: 0 };
+          } else {
+            chance = classify(estimatedRank, cutoff);
+          }
+          if (!chance && !isShowAll) return null;
           return {
             row,
             cutoff,
@@ -966,7 +1011,7 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
           if (!branchCodeFilter.includes('all') && !branchCodeFilter.includes(item.row[6])) return false;
           if (city !== 'all' && item.row[3] !== city) return false;
           if (search && !item.text.includes(search)) return false;
-          if (!ignoreChanceFilter && chanceFilter !== 'all' && item.chance.type !== chanceFilter) return false;
+          if (!isShowAll && !ignoreChanceFilter && chanceFilter !== 'all' && item.chance.type !== chanceFilter) return false;
           return true;
         });
     },
@@ -978,18 +1023,34 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
 
   const sortedResults = useMemo(() => {
     const sorted = [...rawResults];
-    if (sortSelect === 'recommended') {
-      // Sort by cutoff rank ascending (best rank first) across all categories
-      sorted.sort((a, b) => a.cutoff - b.cutoff || b.chance.pct - a.chance.pct);
-    } else if (sortSelect === 'cutoff') {
-      sorted.sort((a, b) => a.cutoff - b.cutoff || b.chance.pct - a.chance.pct);
-    } else if (sortSelect === 'margin') {
-      sorted.sort((a, b) => b.chance.diff - a.chance.diff);
-    } else if (sortSelect === 'college') {
-      sorted.sort((a, b) => a.row[1].localeCompare(b.row[1]) || a.row[2].localeCompare(b.row[2]));
-    } else {
-      sorted.sort((a, b) => b.chance.pct - a.chance.pct || b.chance.diff - a.chance.diff || a.cutoff - b.cutoff);
-    }
+    const sortFn = (a, b) => {
+      const hasA = a.cutoff !== null && a.cutoff !== undefined && a.cutoff > 0;
+      const hasB = b.cutoff !== null && b.cutoff !== undefined && b.cutoff > 0;
+      
+      // If one has cutoff and other doesn't, show the one with cutoff first
+      if (hasA && !hasB) return -1;
+      if (!hasA && hasB) return 1;
+      
+      // If both have cutoff, sort by cutoff rank ascending
+      if (hasA && hasB) {
+        if (sortSelect === 'recommended' || sortSelect === 'cutoff') {
+          return a.cutoff - b.cutoff || b.chance.pct - a.chance.pct;
+        }
+        if (sortSelect === 'margin') {
+          return b.chance.diff - a.chance.diff;
+        }
+        if (sortSelect === 'college') {
+          return a.row[1].localeCompare(b.row[1]) || a.row[2].localeCompare(b.row[2]);
+        }
+        // Default (chance)
+        return b.chance.pct - a.chance.pct || b.chance.diff - a.chance.diff || a.cutoff - b.cutoff;
+      }
+      
+      // If both don't have cutoff, sort by college name
+      return a.row[1].localeCompare(b.row[1]) || a.row[2].localeCompare(b.row[2]);
+    };
+
+    sorted.sort(sortFn);
     return sorted;
   }, [rawResults, sortSelect]);
 
@@ -1158,10 +1219,18 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                       inputMode="numeric"
                       placeholder="e.g. 289"
                       autoComplete="off"
+                      className={validationErrors.has('pcmMarksInput') ? 'field-error' : ''}
                       value={pcmMarksInput}
                       onChange={(e) => {
                         setPcmMarksInput(e.target.value);
                         setEstimatedRank(null);
+                        if (e.target.value) {
+                          setValidationErrors(prev => {
+                            const next = new Set(prev);
+                            next.delete('pcmMarksInput');
+                            return next;
+                          });
+                        }
                       }}
                     />
                   </div>
@@ -1176,10 +1245,18 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                       inputMode="numeric"
                       placeholder="e.g. 140"
                       autoComplete="off"
+                      className={validationErrors.has('kcetScoreInput') ? 'field-error' : ''}
                       value={kcetScoreInput}
                       onChange={(e) => {
                         setKcetScoreInput(e.target.value);
                         setEstimatedRank(null);
+                        if (e.target.value) {
+                          setValidationErrors(prev => {
+                            const next = new Set(prev);
+                            next.delete('kcetScoreInput');
+                            return next;
+                          });
+                        }
                       }}
                     />
                   </div>
@@ -1215,10 +1292,18 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                     inputMode="numeric"
                     placeholder="Example: 28000"
                     autoComplete="off"
+                    className={validationErrors.has('rankInput') ? 'field-error' : ''}
                     value={rankInput}
                     onChange={(e) => {
                       setRankInput(e.target.value);
                       setEstimatedRank(null);
+                      if (e.target.value) {
+                        setValidationErrors(prev => {
+                          const next = new Set(prev);
+                          next.delete('rankInput');
+                          return next;
+                        });
+                      }
                     }}
                   />
                 </div>
@@ -1286,7 +1371,7 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                       <div className="rank-highlight__value">{estimatedRank > 100000 ? '1,00,000+' : formatNumber(estimatedRank)}</div>
                       {rankPrediction && (
                         <span className="rank-highlight__range rank-highlight__range--glow">
-                          Range: {rankPrediction.lowerBound > 100000 ? '1,00,000+' : formatNumber(rankPrediction.lowerBound)} – {rankPrediction.upperBound > 100000 ? '1,00,000+' : formatNumber(rankPrediction.upperBound)}
+                          Range: {rankPrediction.lowerBound > 100000 ? '1,00,000+' : formatNumber(rankPrediction.lowerBound)} – {rankPrediction.upperBound > 100000 ? '3,30,000' : formatNumber(rankPrediction.upperBound)}
                         </span>
                       )}
                     </div>

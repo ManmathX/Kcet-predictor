@@ -364,6 +364,12 @@ h1 {
   background: rgba(15, 23, 42, 0.9);
 }
 
+.field input.field-error,
+.field select.field-error {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
 .segmented {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -754,6 +760,7 @@ h1 {
 .status.safe { color: var(--green); background: var(--green-2); border: 1px solid rgba(16, 185, 129, 0.2); }
 .status.likely { color: var(--lime); background: var(--lime-2); border: 1px solid rgba(163, 230, 53, 0.2); }
 .status.borderline { color: var(--amber); background: var(--amber-2); border: 1px solid rgba(245, 158, 11, 0.2); }
+.status.none { color: var(--muted); background: var(--soft); border: 1px solid var(--line); }
 
 .college-name {
   font-size: 16px;
