@@ -246,32 +246,23 @@ export default function CollegeDetail({ collegeCode, onClose }) {
                 <div className="cd-section">
                   <h3 className="cd-section-title">💼 Placement Overview</h3>
                   
-                  <div className="cd-stats" style={{ marginBottom: '24px' }}>
-                    {college.highest_package && (
-                      <div className="cd-stat-card"><div className="cd-stat-icon">💰</div><div><div className="cd-stat-label">Highest</div><div className="cd-stat-value">{college.highest_package}</div></div></div>
-                    )}
-                    {college.average_package && (
-                      <div className="cd-stat-card"><div className="cd-stat-icon">📊</div><div><div className="cd-stat-label">Average</div><div className="cd-stat-value">{college.average_package}</div></div></div>
-                    )}
-                  </div>
-
                   <div 
                     className="cd-placement-info-box" 
                     style={{ 
-                      minHeight: '200px',
-                      padding: '24px', 
+                      minHeight: '300px',
+                      padding: '32px', 
                       background: 'rgba(15, 23, 42, 0.6)', 
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '16px', 
                       whiteSpace: 'pre-wrap', 
-                      fontSize: '16px', 
+                      fontSize: '17px', 
                       lineHeight: '1.8', 
                       color: '#e2e8f0',
                       boxShadow: 'inset 0 2px 20px rgba(0,0,0,0.3)',
                       overflowY: 'auto'
                     }}
                   >
-                    {college.placement_info ? college.placement_info : "Detailed placement information is currently being updated. Please check back later for comprehensive statistics on companies visited, branchwise placements, and more."}
+                    {college.placement_info || "Detailed placement information is currently being updated. Please check back later for comprehensive statistics on companies visited, branchwise placements, and more."}
                   </div>
                 </div>
               </div>

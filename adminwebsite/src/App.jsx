@@ -369,105 +369,18 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
 
               <h3 style={{ marginTop: '24px', color: 'var(--accent-1)', fontSize: '16px' }}>Placement Details (Optional)</h3>
               
-              <div className="field-row-3">
-                <div className="field">
-                  <label>Highest Package</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 50 LPA"
-                    value={form.highest_package}
-                    onChange={(e) => handleChange('highest_package', e.target.value)}
-                  />
-                </div>
-                <div className="field">
-                  <label>Average Package</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 8.5 LPA"
-                    value={form.average_package}
-                    onChange={(e) => handleChange('average_package', e.target.value)}
-                  />
-                </div>
-                <div className="field">
-                  <label>Median Package</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 6.5 LPA"
-                    value={form.median_package}
-                    onChange={(e) => handleChange('median_package', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="field-row-3" style={{ marginTop: '10px' }}>
-                <div className="field">
-                  <label>Placement Rate</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 95%"
-                    value={form.placement_rate}
-                    onChange={(e) => handleChange('placement_rate', e.target.value)}
-                  />
-                </div>
-                <div className="field">
-                  <label>Companies Visited</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 250+"
-                    value={form.companies_visited}
-                    onChange={(e) => handleChange('companies_visited', e.target.value)}
-                  />
-                </div>
-                <div className="field">
-                  <label>Offers Made</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 1500+"
-                    value={form.offers_made}
-                    onChange={(e) => handleChange('offers_made', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="field" style={{ marginTop: '10px' }}>
-                <label>Top Recruiters</label>
-                <input
-                  type="text"
-                  placeholder="e.g. TCS, Infosys, Amazon, Microsoft"
-                  value={form.top_recruiters}
-                  onChange={(e) => handleChange('top_recruiters', e.target.value)}
-                />
-              </div>
-
-              <div className="field-row" style={{ marginTop: '10px' }}>
-                <div className="field">
-                  <label>Branchwise Placement Data</label>
-                  <textarea
-                    placeholder="e.g. CSE: 98%, ECE: 92%, ME: 80%"
-                    value={form.branchwise_placement}
-                    onChange={(e) => handleChange('branchwise_placement', e.target.value)}
-                    rows={2}
-                  />
-                </div>
-                <div className="field">
-                  <label>Total Internships</label>
-                  <textarea
-                    placeholder="e.g. 500+ students secured internships"
-                    value={form.total_internships}
-                    onChange={(e) => handleChange('total_internships', e.target.value)}
-                    rows={2}
-                  />
-                </div>
-              </div>
-
-              <div className="field" style={{ marginTop: '10px' }}>
-                <label>Placement Info (Detailed)</label>
+              <div className="field" style={{ marginTop: '24px' }}>
+                <label>Placement Details (Optional)</label>
                 <textarea
-                  placeholder="Paste large placement data here for editing and cleaning..."
+                  placeholder="Write or paste all placement details here (e.g., packages, companies, rates, branch-wise data...)"
                   value={form.placement_info}
                   onChange={(e) => handleChange('placement_info', e.target.value)}
-                  rows={8}
+                  rows={15}
+                  style={{ fontSize: '15px', lineHeight: '1.6', fontFamily: 'inherit' }}
                 />
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                  💡 Tip: You can include highest/average packages, companies, and branch-wise stats all in this one box.
+                </p>
               </div>
 
               <h3 style={{ marginTop: '24px', color: 'var(--accent-1)', fontSize: '16px' }}>Facilities & Contact</h3>

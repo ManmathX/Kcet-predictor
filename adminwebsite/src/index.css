@@ -191,6 +191,26 @@ body {
   gap: 16px;
 }
 
+.placement-container {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px 24px;
+}
+
+.field-grid .field {
+  margin-bottom: 0;
+}
+
 .checkbox-field {
   display: flex;
   align-items: center;

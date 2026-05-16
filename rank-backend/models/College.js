@@ -145,6 +145,10 @@ const collegeSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    placement_info: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
