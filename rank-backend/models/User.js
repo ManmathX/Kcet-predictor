@@ -6,7 +6,10 @@ const userSchema = new mongoose.Schema({
   name: String,
   credits: { type: Number, default: 100 },
   lastCreditReset: { type: Date, default: Date.now },
-  isPremium: { type: Boolean, default: false }
+  isPremium: { type: Boolean, default: false },
+  premiumActivatedAt: { type: Date, default: null },
+  paymentId: { type: String, default: null },
+  orderId: { type: String, default: null },
 }, { timestamps: true });
 
 // Middleware to check and reset credits daily before saving or finding

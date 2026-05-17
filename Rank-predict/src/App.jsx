@@ -2421,6 +2421,13 @@ export default function App() {
         <PremiumUpgradeModal
           currentCredits={credits}
           onClose={() => setShowPremiumModal(false)}
+          googleId={profile?.googleId}
+          userName={profile?.name}
+          userEmail={profile?.email}
+          onPaymentSuccess={(data) => {
+            setIsPremium(true);
+            setCredits(data.credits || credits);
+          }}
         />
       )}
     </>

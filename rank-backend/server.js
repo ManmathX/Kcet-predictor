@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const collegeRoutes = require('./routes/colleges');
 const userRoutes = require('./routes/users');
+const paymentRoutes = require('./routes/payments');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -42,6 +43,7 @@ app.use(express.json());
 // ──────────────────────────────────────────────
 app.use('/api/colleges', collegeRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
