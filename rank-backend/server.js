@@ -15,9 +15,14 @@ const PORT = process.env.PORT || 5001;
 // ──────────────────────────────────────────────
 app.use(helmet()); // Basic security headers
 
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000']
-  : []; // Empty array forces strict origin check if FRONTEND_URL is missing
+const allowedOrigins = [
+  'https://predictors2-0-iedq.vercel.app',
+  'https://collegecutoff.in',
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+].filter(Boolean);
 
 if (allowedOrigins.length === 0 && process.env.NODE_ENV === 'production') {
   console.warn('⚠️ WARNING: FRONTEND_URL is not set in production. CORS will block all requests.');
