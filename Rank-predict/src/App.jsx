@@ -642,7 +642,7 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportStatus, setReportStatus] = useState(''); // '' | 'sending' | 'sent' | 'error'
-  const [code, college, course, cityName, , , branchCode] = item.row;
+  const [code, college, course, cityName, , , branchCode, address] = item.row;
   const { chance, cutoff, key } = item;
   const isSaved = saved.has(key);
   const marginText =
@@ -689,7 +689,7 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
         </button>
         <p className="course-name">{course}</p>
         <div className="meta-line">
-          <span>{cityName}</span>
+          <span>📍 {address ? `${address}, ${cityName}` : cityName}</span>
           <span>{seat}</span>
           <span>{marginText}</span>
         </div>

@@ -14,6 +14,7 @@ export function extractUniqueColleges() {
       collegesMap.set(collegeCode, {
         college_code: collegeCode,
         college_name: collegeName,
+        address: address,
         location: address ? `${address}, ${city}` : city,
         city: city,
         description: null,
@@ -36,6 +37,7 @@ export function getCollegeFromData(collegeCode) {
   return {
     college_code: row[0],
     college_name: row[1],
+    address: row[7] || '',
     location: row[7] ? `${row[7]}, ${row[3]}` : row[3],
     city: row[3]
   };
