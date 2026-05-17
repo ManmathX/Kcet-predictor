@@ -3430,3 +3430,891 @@ a.contact-card:hover {
     padding: 8px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════
+   Premium Single-Page Scroll College Details CSS
+   ═══════════════════════════════════════════════ */
+
+/* Modal scroll support */
+.scrollable-detail-panel {
+  scroll-behavior: smooth !important;
+}
+
+/* Custom Sticky Close Button */
+.cd-sticky-close {
+  position: fixed !important;
+  top: 24px !important;
+  right: 24px !important;
+  z-index: 150 !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  background: rgba(10, 15, 30, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+.cd-sticky-close:hover {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  transform: scale(1.08) rotate(90deg) !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5) !important;
+}
+
+/* Sticky Scroll Navigation */
+.cd-scroll-navbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: rgba(10, 15, 30, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+  padding: 10px 24px !important;
+  overflow: hidden;
+  margin-top: 0 !important; /* No overlap below hero */
+}
+
+.scrollable-content-area {
+  margin-top: 0 !important;
+  padding-top: 24px !important;
+}
+
+.cd-scroll-navbar-inner {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE 10+ */
+}
+
+.cd-scroll-navbar-inner::-webkit-scrollbar {
+  display: none !important; /* Safari and Chrome */
+}
+
+.cd-scroll-nav-btn {
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 18px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 99px !important;
+  color: #94a3b8 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.cd-scroll-nav-btn:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.cd-scroll-nav-btn.active {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Scroll Sections */
+.cd-scroll-section {
+  scroll-margin-top: 72px !important; /* Matches height of sticky navbar + safety margin */
+  margin-bottom: 24px !important;
+  padding: 32px !important;
+  background: rgba(255, 255, 255, 0.01) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 20px !important;
+  transition: all 0.3s ease !important;
+}
+
+.cd-scroll-section:hover {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Hero Overlay details */
+.cd-hero-overlay-details {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  padding: 40px !important;
+  z-index: 5 !important;
+  background: linear-gradient(180deg, transparent 0%, rgba(10, 15, 30, 0.95) 90%) !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.cd-hero-badges-row {
+  display: flex !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+  margin-top: 12px !important;
+}
+
+.cd-hero-tag-badge {
+  font-size: 13px !important;
+  font-weight: 550 !important;
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 6px 16px !important;
+  border-radius: 99px !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* Overview Fact Cards */
+.cd-fast-facts-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 16px !important;
+  margin-bottom: 28px !important;
+}
+
+.cd-fact-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 20px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.cd-fact-card:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(99, 102, 241, 0.25) !important;
+  transform: translateY(-2px) !important;
+}
+
+.cd-fact-icon {
+  font-size: 28px !important;
+  flex-shrink: 0 !important;
+}
+
+.cd-fact-label {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+}
+
+.cd-fact-value {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+}
+
+.cd-subsection-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  margin: 28px 0 12px !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+/* Fees Structures */
+.cd-fees-highlight-box {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+  padding: 24px !important;
+  margin-bottom: 24px !important;
+}
+
+.cd-fees-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin-bottom: 20px !important;
+}
+
+.cd-fee-icon {
+  font-size: 32px !important;
+}
+
+.cd-fees-details-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.cd-fee-detail-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+}
+
+.cd-fee-type {
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+.cd-fee-amt {
+  font-size: 20px !important;
+  font-weight: 750 !important;
+  color: var(--green) !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.cd-course-badges-flex {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+}
+
+.cd-course-tag-pill {
+  font-size: 13px !important;
+  font-weight: 550 !important;
+  color: #fff !important;
+  background: rgba(99, 102, 241, 0.1) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  padding: 8px 16px !important;
+  border-radius: 99px !important;
+  transition: all 0.2s ease !important;
+}
+
+.cd-course-tag-pill:hover {
+  background: rgba(99, 102, 241, 0.2) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Placement KPIs */
+.cd-placements-kpis {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  gap: 12px !important;
+  margin-bottom: 24px !important;
+}
+
+.cd-kpi-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px 10px !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+  text-align: center !important;
+  transition: all 0.3s ease !important;
+}
+
+.cd-kpi-card:hover {
+  transform: scale(1.03) !important;
+  border-color: rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.1) !important;
+}
+
+.cd-kpi-val {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.cd-kpi-label {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  font-weight: 600 !important;
+  margin-top: 6px !important;
+}
+
+/* Facility tags */
+.cd-facility-tags {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.cd-facility-tag {
+  font-size: 13px !important;
+  font-weight: 550 !important;
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 8px 16px !important;
+  border-radius: 99px !important;
+  transition: all 0.2s ease !important;
+}
+
+.cd-facility-tag:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Vertical timeline for admissions */
+.cd-steps-vertical-timeline {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  position: relative !important;
+  padding-left: 20px !important;
+  margin-top: 20px !important;
+}
+
+.cd-steps-vertical-timeline::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 33px !important;
+  top: 10px !important;
+  bottom: 10px !important;
+  width: 2px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.cd-timeline-step-item {
+  display: flex !important;
+  gap: 20px !important;
+  position: relative !important;
+}
+
+.cd-step-num {
+  flex-shrink: 0 !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4) !important;
+}
+
+.cd-step-info-block h4 {
+  margin: 0 0 4px !important;
+  color: #fff !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.cd-step-info-block p {
+  margin: 0 !important;
+  font-size: 13px !important;
+  color: #94a3b8 !important;
+  line-height: 1.6 !important;
+}
+
+/* Collapsible FAQs accordion */
+.cd-faqs-wrapper-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  margin-top: 16px !important;
+}
+
+.cd-faq-item-collapsible {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+}
+
+.cd-faq-item-collapsible.expanded {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+.cd-faq-question-btn {
+  width: 100% !important;
+  padding: 16px 20px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  gap: 12px !important;
+}
+
+.cd-faq-arrow-icon {
+  font-size: 10px !important;
+  color: #94a3b8 !important;
+  transition: transform 0.3s ease !important;
+}
+
+.cd-faq-item-collapsible.expanded .cd-faq-arrow-icon {
+  transform: rotate(180deg) !important;
+  color: var(--accent-1) !important;
+}
+
+.cd-faq-answer-block {
+  padding: 0 20px 16px !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  color: #94a3b8 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+.cd-faq-answer-block p {
+  margin: 0 !important;
+}
+
+/* Reviews Score Dashboard */
+.cd-reviews-dashboard-layout {
+  display: flex !important;
+  align-items: center !important;
+  gap: 40px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 24px !important;
+  border-radius: 16px !important;
+  flex-wrap: wrap !important;
+}
+
+.cd-reviews-score-summary {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.cd-rev-score-big {
+  font-size: 48px !important;
+  font-weight: 850 !important;
+  color: #fff !important;
+  line-height: 1 !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.cd-rev-stars {
+  font-size: 20px !important;
+  margin-top: 8px !important;
+  letter-spacing: 2px !important;
+}
+
+.cd-reviews-breakdown-bars {
+  flex: 1 !important;
+  min-width: 250px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.cd-breakdown-bar-item {
+  display: grid !important;
+  grid-template-columns: 100px 1fr 30px !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #94a3b8 !important;
+}
+
+.cd-bar-line {
+  height: 6px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-radius: 99px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.cd-bar-line span {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2)) !important;
+  border-radius: 99px !important;
+}
+
+.cd-review-card-item {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+}
+
+.cd-review-header-line {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 8px !important;
+  font-size: 13px !important;
+}
+
+.cd-review-text-desc {
+  margin: 0 !important;
+  font-size: 13px !important;
+  color: #cbd5e1 !important;
+  line-height: 1.6 !important;
+  font-style: italic !important;
+}
+
+/* Rankings & Accolades */
+.cd-rankings-accolades-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding: 24px !important;
+  border-radius: 16px !important;
+}
+
+.cd-ranking-badge-wrapper {
+  display: flex !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+}
+
+.cd-ranking-huge-badge {
+  flex: 1 !important;
+  min-width: 140px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  background: rgba(99, 102, 241, 0.06) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  border-radius: 12px !important;
+}
+
+.cd-rank-gold {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  color: var(--amber) !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.cd-rank-org {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  margin-top: 4px !important;
+}
+
+/* Scholarship schemes */
+.cd-scholarship-item-bar {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-left: 3px solid var(--accent-1) !important;
+  padding: 12px 16px !important;
+  border-radius: 0 8px 8px 0 !important;
+  font-size: 13px !important;
+  color: #cbd5e1 !important;
+  line-height: 1.6 !important;
+}
+
+/* MOBILE ADAPTABILITY OVERRIDES FOR SCROLL EXPERIENCE */
+@media (max-width: 768px) {
+  .cd-scroll-navbar {
+    padding: 6px 8px !important;
+  }
+  .cd-scroll-nav-btn {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    gap: 4px !important;
+  }
+  .cd-hero-overlay-details {
+    padding: 16px !important;
+  }
+  .cd-title {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Dense Spacing for Sections */
+  .cd-scroll-section {
+    padding: 12px 14px !important;
+    margin-bottom: 12px !important;
+    border-radius: 12px !important;
+    scroll-margin-top: 56px !important; /* Matches smaller sticky navbar */
+  }
+  
+  .cd-section-title {
+    font-size: 15px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .cd-subsection-title {
+    font-size: 14px !important;
+    margin: 12px 0 6px !important;
+  }
+  
+  .cd-section-text {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  
+  /* Fact Cards Mobile Spacing */
+  .cd-fast-facts-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+  .cd-fact-card {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    border-radius: 8px !important;
+  }
+  .cd-fact-icon {
+    font-size: 20px !important;
+  }
+  .cd-fact-label {
+    font-size: 9px !important;
+    margin-bottom: 2px !important;
+  }
+  .cd-fact-value {
+    font-size: 12px !important;
+  }
+  
+  /* Fee Breakdown Spacing */
+  .cd-fees-highlight-box {
+    padding: 12px !important;
+    margin-bottom: 14px !important;
+    border-radius: 10px !important;
+  }
+  .cd-fees-header {
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+  }
+  .cd-fee-icon {
+    font-size: 24px !important;
+  }
+  .cd-fees-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  .cd-fee-detail-card {
+    padding: 10px !important;
+    gap: 4px !important;
+    border-radius: 8px !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  .cd-fee-amt {
+    font-size: 16px !important;
+  }
+  
+  .cd-course-badges-flex {
+    gap: 6px !important;
+    margin-top: 8px !important;
+  }
+  .cd-course-tag-pill {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Placement KPIs Spacing */
+  .cd-placements-kpis {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+  .cd-kpi-card {
+    padding: 10px 8px !important;
+    border-radius: 10px !important;
+  }
+  .cd-kpi-val {
+    font-size: 16px !important;
+  }
+  .cd-kpi-label {
+    font-size: 9px !important;
+    margin-top: 4px !important;
+  }
+  .cd-placement-info-box {
+    padding: 12px 14px !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    min-height: 150px !important;
+    border-radius: 10px !important;
+  }
+  
+  /* Facilities Spacing */
+  .cd-facility-tags {
+    gap: 6px !important;
+  }
+  .cd-facility-tag {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Vertical Timeline Spacing */
+  .cd-steps-vertical-timeline {
+    gap: 12px !important;
+    margin-top: 12px !important;
+    padding-left: 8px !important;
+  }
+  .cd-steps-vertical-timeline::before {
+    left: 21px !important;
+  }
+  .cd-timeline-step-item {
+    gap: 12px !important;
+  }
+  .cd-step-num {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 11px !important;
+  }
+  .cd-step-info-block h4 {
+    font-size: 13px !important;
+  }
+  .cd-step-info-block p {
+    font-size: 11px !important;
+  }
+  
+  /* FAQs Accordion Spacing */
+  .cd-faqs-wrapper-list {
+    gap: 8px !important;
+  }
+  .cd-faq-item-collapsible {
+    border-radius: 8px !important;
+  }
+  .cd-faq-question-btn {
+    padding: 10px 14px !important;
+    font-size: 12px !important;
+  }
+  .cd-faq-answer-block {
+    padding: 0 14px 10px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Reviews Dashboard Spacing */
+  .cd-reviews-dashboard-layout {
+    padding: 14px !important;
+    border-radius: 10px !important;
+    gap: 14px !important;
+  }
+  .cd-rev-score-big {
+    font-size: 32px !important;
+  }
+  .cd-rev-stars {
+    font-size: 14px !important;
+    margin-top: 2px !important;
+  }
+  .cd-reviews-breakdown-bars {
+    width: 100% !important;
+    gap: 6px !important;
+  }
+  .cd-breakdown-bar-item {
+    grid-template-columns: 80px 1fr 20px !important;
+    gap: 8px !important;
+    font-size: 10px !important;
+  }
+  .cd-review-card-item {
+    padding: 12px !important;
+    border-radius: 8px !important;
+  }
+  .cd-review-header-line {
+    font-size: 11px !important;
+    margin-bottom: 4px !important;
+  }
+  .cd-review-text-desc {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Rankings & Accolades Spacing */
+  .cd-rankings-accolades-panel {
+    padding: 14px !important;
+    border-radius: 10px !important;
+  }
+  .cd-ranking-huge-badge {
+    padding: 10px !important;
+    border-radius: 8px !important;
+  }
+  .cd-rank-gold {
+    font-size: 20px !important;
+  }
+  .cd-scholarship-item-bar {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Contact Information Spacing */
+  .cd-contact-grid {
+    gap: 8px !important;
+  }
+  .cd-contact-item {
+    padding: 10px !important;
+    gap: 10px !important;
+    border-radius: 8px !important;
+  }
+  .cd-contact-icon {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+  }
+  .cd-contact-label {
+    font-size: 9px !important;
+    margin-bottom: 2px !important;
+  }
+  .cd-contact-value {
+    font-size: 12px !important;
+  }
+  
+  /* Action Buttons Spacing */
+  .cd-actions {
+    margin-top: 16px !important;
+    gap: 8px !important;
+  }
+  .cd-website-btn, .cd-actions .secondary-btn {
+    height: 40px !important;
+    font-size: 13px !important;
+    padding: 0 16px !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Course/Cutoff Tables Dense Spacing */
+  .cd-grid-header {
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+  }
+  .cd-grid-subheader {
+    font-size: 9px !important;
+    padding: 4px 8px !important;
+  }
+  .cd-grid-row {
+    padding: 6px 8px !important;
+  }
+  .branch-title {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+  }
+  .cd-grid-cell.rank {
+    font-size: 12px !important;
+  }
+}
