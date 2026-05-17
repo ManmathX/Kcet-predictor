@@ -92,15 +92,15 @@ const DISPLAY_STEP = 80;
 
 // Replace this URL with your deployed Google Apps Script web app URL.
 // See google-apps-script.js for setup instructions.
-const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzRAUp0DmDne6Nizx_OMIsRrx5Aif8O8uJHcBpSXkg4W9qD2GHrvmS1gI1Wkk9Id7vI/exec';
+const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyFgoAq0tv9cWFk4loj3gh1ciPs4tTX93Jp6UTU4UzCa0RH-fvvO4wjslN1scoLSqMSYQ/exec';
 
 // Report sheet — for users to flag incorrect college data.
 // Deploy google-apps-script-report.js to the report sheet and paste the URL here.
-const REPORT_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxXHzBeJtkATerrAaDsYnXHfhCEPFmQx2TBf2eG5cGCGWYJakk5IFGsahCapn6ofJib/exec';
+const REPORT_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxjAdcZF5MS6dHZk1vZoXIBGj1WTAl195p_nlpkzk_FXS6fnT4DlHYPsB31Vz6P5lBe4A/exec';
 
 // Feedback sheet — for general app feedback and exit ratings.
 // Deploy a separate google apps script for this and paste URL here.
-const FEEDBACK_SHEET_WEBHOOK = ''; // PASTE YOUR FEEDBACK SHEET WEB APP URL HERE
+const FEEDBACK_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzF6CFEKLoycp7C-hPWpjp42bXjT1QxcQdO4RkWrUt9h-3SiFj59pMvahwPPAWRUeuzTw/exec'; // PASTE YOUR FEEDBACK SHEET WEB APP URL HERE
 
 function createGoogleNonce() {
   return window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
