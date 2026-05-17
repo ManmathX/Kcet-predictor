@@ -4318,3 +4318,57 @@ a.contact-card:hover {
     font-size: 12px !important;
   }
 }
+
+/* Credit Counter Responsive Styles */
+.credit-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.credit-counter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.credit-counter-label {
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.credit-counter-badge {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.credit-counter-progress-bar {
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .credit-counter-label {
+    display: none !important; /* Hide label to prevent layout break on mobile */
+  }
+  .credit-counter-progress-bar {
+    display: none !important; /* Hide progress bar on mobile */
+  }
+  .header-actions {
+    gap: 8px !important;
+  }
+}
+

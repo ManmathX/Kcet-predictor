@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const collegeRoutes = require('./routes/colleges');
+const userRoutes = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -40,6 +41,7 @@ app.use(express.json());
 // Routes
 // ──────────────────────────────────────────────
 app.use('/api/colleges', collegeRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

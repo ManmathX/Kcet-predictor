@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import CreditCounter from './CreditCounter';
+import PremiumUpgradeModal from './PremiumUpgradeModal';
 
 const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 'item' }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -780,7 +782,7 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
   );
 };
 
-function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAboutUs, onContactUs, onViewCollege }) {
+function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAboutUs, onContactUs, onViewCollege, credits, isPremium, onDeductCredits, onShowPremium }) {
   const [mode, setMode] = useState('aggregate');
   const [kcetScoreInput, setKcetScoreInput] = useState('');
   const [pcmMarksInput, setPcmMarksInput] = useState('');
@@ -890,10 +892,15 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
     doc.save('kcet-2025-shortlist.pdf');
   };
 
-  const runPrediction = (e) => {
+  const runPrediction = async (e) => {
     if (e) e.preventDefault();
     setValidationErrors(new Set());
     try {
+      // Credit gate: check if user has enough credits (skip for premium)
+      if (profile && !isPremium && credits < 10) {
+        onShowPremium();
+        return;
+      }
       let rank;
       let prediction = null;
       if (mode === 'rank') {
@@ -968,6 +975,14 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
         setPendingRank(rank);
         onRequestAuth();
       } else {
+        // Deduct credits on successful prediction
+        if (!isPremium) {
+          const deductOk = await onDeductCredits();
+          if (!deductOk) {
+            onShowPremium();
+            return;
+          }
+        }
         setEstimatedRank(rank);
         document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -1093,6 +1108,9 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
           </div>
 
           <div className="header-actions">
+            {profile && (
+              <CreditCounter credits={credits} isPremium={isPremium} />
+            )}
             <button
               className={`saved-pill ${saved.size > 0 ? 'has-saved' : ''}`}
               type="button"
@@ -1348,11 +1366,35 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                 />
               </div>
 
-              <button className="primary-btn" type="submit">
-                {mode === 'aggregate' ? 'Predict Rank' : 'Show colleges'}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <button 
+                className="primary-btn" 
+                type="submit"
+                style={{ 
+                  display: 'inline-flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '2px', 
+                  padding: '8px 16px', 
+                  minHeight: '52px' 
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
+                  {mode === 'aggregate' ? 'Predict Rank' : 'Show colleges'}
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                {profile && !isPremium && (
+                  <span style={{ fontSize: '11px', opacity: 0.85, fontWeight: 'normal', letterSpacing: '0.3px' }}>
+                    ⚡ Costs 10 Credits
+                  </span>
+                )}
+                {profile && isPremium && (
+                  <span style={{ fontSize: '11px', opacity: 0.85, fontWeight: 'normal', letterSpacing: '0.3px', color: '#4ade80' }}>
+                    ✨ Free with Pro Pass
+                  </span>
+                )}
               </button>
             </form>
           </aside>
@@ -1612,10 +1654,37 @@ export default function App() {
   const [showAboutUs, setShowAboutUs] = useState(false);
   const [showContactUs, setShowContactUs] = useState(false);
   const [selectedCollegeCode, setSelectedCollegeCode] = useState(null);
+  const [credits, setCredits] = useState(100);
+  const [isPremium, setIsPremium] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
+  // Sync credits with backend whenever profile changes
   useEffect(() => {
     if (profile) {
       sessionStorage.removeItem(GOOGLE_NONCE_KEY);
+      // Sync user credits from backend
+      (async () => {
+        try {
+          const res = await fetch(`${API_BASE}/users/sync`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              googleId: profile.googleId,
+              email: profile.email,
+              name: profile.name
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setCredits(data.credits);
+            setIsPremium(data.isPremium);
+          }
+        } catch (err) {
+          console.warn('[Credits] Failed to sync credits:', err);
+        }
+      })();
     }
   }, [profile]);
 
@@ -1924,6 +1993,31 @@ export default function App() {
         onAboutUs={() => setShowAboutUs(true)}
         onContactUs={() => setShowContactUs(true)}
         onViewCollege={(code) => setSelectedCollegeCode(code)}
+        credits={credits}
+        isPremium={isPremium}
+        onDeductCredits={async () => {
+          try {
+            const res = await fetch(`${API_BASE}/users/deduct`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ googleId: profile?.googleId })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              setCredits(data.credits);
+              return true;
+            }
+            if (res.status === 403) {
+              const data = await res.json();
+              setCredits(data.credits || 0);
+              return false;
+            }
+            return true; // Allow on network error gracefully
+          } catch {
+            return true; // Fail-open so prediction still works offline
+          }
+        }}
+        onShowPremium={() => setShowPremiumModal(true)}
       />
 
       {/* College Detail Modal */}
@@ -2320,6 +2414,14 @@ export default function App() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Premium Upgrade Modal */}
+      {showPremiumModal && (
+        <PremiumUpgradeModal
+          currentCredits={credits}
+          onClose={() => setShowPremiumModal(false)}
+        />
       )}
     </>
   );
