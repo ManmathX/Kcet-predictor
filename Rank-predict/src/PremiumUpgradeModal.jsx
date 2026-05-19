@@ -111,7 +111,7 @@ export default function PremiumUpgradeModal({ onClose, currentCredits, googleId,
             Insufficient Credits
           </h2>
           <p style={{ color: '#cbd5e1', fontSize: '15px', lineHeight: '1.5' }}>
-            You have {currentCredits} credits remaining. Each prediction requires 10 credits. 
+            You have {currentCredits} credits remaining. Each prediction requires 20 credits. 
             Upgrade to Premium for unlimited predictions, or wait until your daily reset.
           </p>
         </div>

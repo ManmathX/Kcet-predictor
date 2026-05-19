@@ -897,7 +897,7 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
     setValidationErrors(new Set());
     try {
       // Credit gate: check if user has enough credits (skip for premium)
-      if (profile && !isPremium && credits < 10) {
+      if (profile && !isPremium && credits < 20) {
         onShowPremium();
         return;
       }
@@ -1387,7 +1387,7 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                 </div>
                 {profile && !isPremium && (
                   <span style={{ fontSize: '11px', opacity: 0.85, fontWeight: 'normal', letterSpacing: '0.3px' }}>
-                    ⚡ Costs 10 Credits
+                    ⚡ Costs 20 Credits
                   </span>
                 )}
                 {profile && isPremium && (

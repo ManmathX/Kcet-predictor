@@ -35,7 +35,7 @@ router.post('/sync', async (req, res) => {
 });
 
 // POST /api/users/deduct
-// Deduct 10 credits for a prediction
+// Deduct 20 credits for a prediction
 router.post('/deduct', async (req, res) => {
   try {
     const { googleId } = req.body;
@@ -62,7 +62,7 @@ router.post('/deduct', async (req, res) => {
     }
 
     // Check balance
-    if (user.credits < 10) {
+    if (user.credits < 20) {
       return res.status(403).json({ 
         error: 'Insufficient credits',
         credits: user.credits
@@ -70,7 +70,7 @@ router.post('/deduct', async (req, res) => {
     }
 
     // Deduct
-    user.credits -= 10;
+    user.credits -= 20;
     await user.save();
 
     res.json({
