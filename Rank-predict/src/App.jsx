@@ -8,10 +8,13 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef(null);
   const triggerRef = useRef(null);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && triggerRef.current && !triggerRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
+          triggerRef.current && !triggerRef.current.contains(event.target) &&
+          menuRef.current && !menuRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
@@ -72,6 +75,7 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
       </div>
       {isOpen && createPortal(
         <div
+          ref={menuRef}
           className="multi-select-menu"
           style={{
             position: 'fixed',
@@ -863,6 +867,13 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
       }, 100);
     }
   }, [profile, pendingRank]);
+
+  // Pre-fill PCM marks from profile if available and input is empty
+  useEffect(() => {
+    if (profile?.pcmMarks && !pcmMarksInput) {
+      setPcmMarksInput(String(profile.pcmMarks));
+    }
+  }, [profile, pcmMarksInput]);
 
   const [saved, setSaved] = useState(() => {
     try {
