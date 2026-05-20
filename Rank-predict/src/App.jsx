@@ -1,20 +1,34 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import CreditCounter from './CreditCounter';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 
 const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 'item' }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef(null);
+  const triggerRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && triggerRef.current && !triggerRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width
+      });
+    }
+  }, [isOpen]);
 
   const handleToggle = (value) => {
     let newSelected;
@@ -31,13 +45,13 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
     onChange(newSelected);
   };
 
-  const displayValue = selected.includes('all') 
-    ? placeholder 
+  const displayValue = selected.includes('all')
+    ? placeholder
     : `${selected.length} ${unit}${selected.length > 1 ? 'es' : ''} selected`;
 
   return (
     <div className="multi-select" ref={dropdownRef}>
-      <div className="multi-select-trigger">
+      <div className="multi-select-trigger" ref={triggerRef}>
         <div className="multi-select-trigger-text" onClick={() => setIsOpen(!isOpen)}>
           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayValue}</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
@@ -45,8 +59,8 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
           </svg>
         </div>
         {!selected.includes('all') && (
-          <button 
-            className="multi-select-reset" 
+          <button
+            className="multi-select-reset"
             onClick={(e) => { e.stopPropagation(); onChange(['all']); }}
             title={`Clear ${unit}s`}
           >
@@ -56,19 +70,36 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
           </button>
         )}
       </div>
-      {isOpen && (
-        <div className="multi-select-menu">
+      {isOpen && createPortal(
+        <div
+          className="multi-select-menu"
+          style={{
+            position: 'fixed',
+            top: position.top,
+            left: position.left,
+            width: position.width,
+            background: '#0a0f1e',
+            zIndex: 9999,
+            border: '2px solid rgba(99, 102, 241, 0.5)',
+            boxShadow: '0 16px 48px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(99, 102, 241, 0.1)'
+          }}
+        >
           {options.map((opt) => (
-            <label key={opt.value} className="multi-select-option">
-              <input 
-                type="checkbox" 
+            <label
+              key={opt.value}
+              className="multi-select-option"
+              style={{ color: '#f1f5f9' }}
+            >
+              <input
+                type="checkbox"
                 checked={selected.includes(opt.value)}
                 onChange={() => handleToggle(opt.value)}
               />
-              <span>{opt.label}</span>
+              <span style={{ color: '#f1f5f9' }}>{opt.label}</span>
             </label>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

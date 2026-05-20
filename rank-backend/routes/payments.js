@@ -4,16 +4,27 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const User = require('../models/User');
 
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Initialize Razorpay instance if keys are provided
+const hasRazorpayKeys = process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET;
+const razorpay = hasRazorpayKeys
+  ? new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    })
+  : null;
+
+if (!hasRazorpayKeys) {
+  console.warn('⚠️ WARNING: Razorpay credentials (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) are missing. Payment features will not work.');
+}
 
 // POST /api/payments/create-order
 // Creates a Razorpay order for KCET Pro Pass (₹99)
 router.post('/create-order', async (req, res) => {
   try {
+    if (!razorpay) {
+      return res.status(500).json({ error: 'Payment services are not configured on this server.' });
+    }
+
     const { googleId } = req.body;
 
     if (!googleId) {
@@ -54,6 +65,10 @@ router.post('/create-order', async (req, res) => {
 // Verifies Razorpay payment signature and upgrades user to premium
 router.post('/verify', async (req, res) => {
   try {
+    if (!hasRazorpayKeys) {
+      return res.status(500).json({ error: 'Payment services are not configured on this server.' });
+    }
+
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, googleId } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !googleId) {

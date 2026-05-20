@@ -2567,17 +2567,12 @@ a.contact-card:hover {
 }
 
 .multi-select-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: 100%;
   max-height: 250px;
   overflow-y: auto;
-  background: var(--bg-color);
-  border: 1px solid var(--line);
+  background: #0a0f1e !important; /* Completely opaque dark background */
+  border: 2px solid rgba(99, 102, 241, 0.5) !important; /* Accent color border for visibility */
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
-  z-index: 50;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(99, 102, 241, 0.1) !important; /* Strong shadow with accent glow */
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -2591,12 +2586,20 @@ a.contact-card:hover {
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   font-size: 14px;
+  color: #f1f5f9 !important; /* Highly visible text color */
 }
 
 .multi-select-option:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* Fallback styling for native select dropdown options */
+select option {
+  background-color: #090d16 !important;
+  color: #ffffff !important;
 }
 
 .multi-select-option input[type="checkbox"] {
