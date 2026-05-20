@@ -131,7 +131,7 @@ const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyFgoAq0tv
 
 // Report sheet — for users to flag incorrect college data.
 // Deploy google-apps-script-report.js to the report sheet and paste the URL here.
-const REPORT_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxjAdcZF5MS6dHZk1vZoXIBGj1WTAl195p_nlpkzk_FXS6fnT4DlHYPsB31Vz6P5lBe4A/exec';
+const REPORT_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzDBKVriD-NoBYv4zuFX38St4EfDIXUZyeKy-LZklMS6OFbrEtDhf9HttlafzSL5-Si/exec';
 
 // Feedback sheet — for general app feedback and exit ratings.
 // Deploy a separate google apps script for this and paste URL here.
