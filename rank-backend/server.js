@@ -17,6 +17,7 @@ app.use(helmet()); // Basic security headers
 
 const allowedOrigins = [
   'https://predictors2-0-iedq.vercel.app',
+  'https://predictors2-0.vercel.app',
   'https://collegecutoff.in',
   process.env.FRONTEND_URL,
   'http://localhost:5173',
