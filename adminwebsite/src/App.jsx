@@ -97,7 +97,6 @@ const EMPTY_FORM = {
   college_code: '',
   college_name: '',
   location: '',
-  address: '',
   city: '',
   description: '',
   photo_url: '',
@@ -144,7 +143,6 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
           college_code: data.college_code || '',
           college_name: data.college_name || '',
           location: data.location || '',
-          address: data.address || '',
           city: data.city || '',
           description: data.description || '',
           photo_url: data.photo_url || '',
@@ -294,16 +292,6 @@ function CollegeFormModal({ editCode, onClose, onSaved, addToast }) {
                     onChange={(e) => handleChange('city', e.target.value)}
                   />
                 </div>
-              </div>
-
-              <div className="field">
-                <label>Full Address</label>
-                <input
-                  type="text"
-                  placeholder="e.g. K R Circle, Bangalore / POST BOX NO 1908, BULL TEMPLE ROAD, BANGALORE"
-                  value={form.address}
-                  onChange={(e) => handleChange('address', e.target.value)}
-                />
               </div>
 
               <div className="field">
