@@ -278,6 +278,9 @@ export default function CollegeDetail({ collegeCode, onClose }) {
               <h1 className="cd-title">{college.college_name}</h1>
               <div className="cd-hero-badges-row">
                 <span className="cd-hero-tag-badge">📍 {college.location || college.city || 'Karnataka'}</span>
+                {college.address && college.address !== college.location && (
+                  <span className="cd-hero-tag-badge">🏠 {college.address}</span>
+                )}
                 <span className="cd-hero-tag-badge">🗓 {establishedText}</span>
                 <span className="cd-hero-tag-badge">🔢 Code: {college.college_code}</span>
               </div>

@@ -1,37 +1,18 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import CreditCounter from './CreditCounter';
-import PremiumUpgradeModal from './PremiumUpgradeModal';
 
 const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 'item' }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef(null);
-  const triggerRef = useRef(null);
-  const menuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
-          triggerRef.current && !triggerRef.current.contains(event.target) &&
-          menuRef.current && !menuRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + 4,
-        left: rect.left,
-        width: rect.width
-      });
-    }
-  }, [isOpen]);
 
   const handleToggle = (value) => {
     let newSelected;
@@ -48,13 +29,13 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
     onChange(newSelected);
   };
 
-  const displayValue = selected.includes('all')
-    ? placeholder
+  const displayValue = selected.includes('all') 
+    ? placeholder 
     : `${selected.length} ${unit}${selected.length > 1 ? 'es' : ''} selected`;
 
   return (
     <div className="multi-select" ref={dropdownRef}>
-      <div className="multi-select-trigger" ref={triggerRef}>
+      <div className="multi-select-trigger">
         <div className="multi-select-trigger-text" onClick={() => setIsOpen(!isOpen)}>
           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayValue}</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
@@ -62,8 +43,8 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
           </svg>
         </div>
         {!selected.includes('all') && (
-          <button
-            className="multi-select-reset"
+          <button 
+            className="multi-select-reset" 
             onClick={(e) => { e.stopPropagation(); onChange(['all']); }}
             title={`Clear ${unit}s`}
           >
@@ -73,37 +54,19 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
           </button>
         )}
       </div>
-      {isOpen && createPortal(
-        <div
-          ref={menuRef}
-          className="multi-select-menu"
-          style={{
-            position: 'fixed',
-            top: position.top,
-            left: position.left,
-            width: position.width,
-            background: '#0a0f1e',
-            zIndex: 9999,
-            border: '2px solid rgba(99, 102, 241, 0.5)',
-            boxShadow: '0 16px 48px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(99, 102, 241, 0.1)'
-          }}
-        >
+      {isOpen && (
+        <div className="multi-select-menu">
           {options.map((opt) => (
-            <label
-              key={opt.value}
-              className="multi-select-option"
-              style={{ color: '#f1f5f9' }}
-            >
-              <input
-                type="checkbox"
+            <label key={opt.value} className="multi-select-option">
+              <input 
+                type="checkbox" 
                 checked={selected.includes(opt.value)}
                 onChange={() => handleToggle(opt.value)}
               />
-              <span style={{ color: '#f1f5f9' }}>{opt.label}</span>
+              <span>{opt.label}</span>
             </label>
           ))}
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   );
@@ -127,15 +90,15 @@ const DISPLAY_STEP = 80;
 
 // Replace this URL with your deployed Google Apps Script web app URL.
 // See google-apps-script.js for setup instructions.
-const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyFgoAq0tv9cWFk4loj3gh1ciPs4tTX93Jp6UTU4UzCa0RH-fvvO4wjslN1scoLSqMSYQ/exec';
+const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzRAUp0DmDne6Nizx_OMIsRrx5Aif8O8uJHcBpSXkg4W9qD2GHrvmS1gI1Wkk9Id7vI/exec';
 
 // Report sheet — for users to flag incorrect college data.
 // Deploy google-apps-script-report.js to the report sheet and paste the URL here.
-const REPORT_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzDBKVriD-NoBYv4zuFX38St4EfDIXUZyeKy-LZklMS6OFbrEtDhf9HttlafzSL5-Si/exec';
+const REPORT_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxXHzBeJtkATerrAaDsYnXHfhCEPFmQx2TBf2eG5cGCGWYJakk5IFGsahCapn6ofJib/exec';
 
 // Feedback sheet — for general app feedback and exit ratings.
 // Deploy a separate google apps script for this and paste URL here.
-const FEEDBACK_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzF6CFEKLoycp7C-hPWpjp42bXjT1QxcQdO4RkWrUt9h-3SiFj59pMvahwPPAWRUeuzTw/exec'; // PASTE YOUR FEEDBACK SHEET WEB APP URL HERE
+const FEEDBACK_SHEET_WEBHOOK = ''; // PASTE YOUR FEEDBACK SHEET WEB APP URL HERE
 
 function createGoogleNonce() {
   return window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -679,7 +642,7 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportStatus, setReportStatus] = useState(''); // '' | 'sending' | 'sent' | 'error'
-  const [code, college, course, cityName, , , branchCode] = item.row;
+  const [code, college, course, cityName, , , branchCode, address] = item.row;
   const { chance, cutoff, key } = item;
   const isSaved = saved.has(key);
   const marginText =
@@ -726,7 +689,7 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
         </button>
         <p className="course-name">{course}</p>
         <div className="meta-line">
-          <span>{cityName}</span>
+          <span>📍 {address ? `${address}, ${cityName}` : cityName}</span>
           <span>{seat}</span>
           <span>{marginText}</span>
         </div>
@@ -817,7 +780,7 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
   );
 };
 
-function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAboutUs, onContactUs, onViewCollege, credits, isPremium, onDeductCredits, onShowPremium }) {
+function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAboutUs, onContactUs, onViewCollege }) {
   const [mode, setMode] = useState('aggregate');
   const [kcetScoreInput, setKcetScoreInput] = useState('');
   const [pcmMarksInput, setPcmMarksInput] = useState('');
@@ -867,13 +830,6 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
       }, 100);
     }
   }, [profile, pendingRank]);
-
-  // Pre-fill PCM marks from profile if available and input is empty
-  useEffect(() => {
-    if (profile?.pcmMarks && !pcmMarksInput) {
-      setPcmMarksInput(String(profile.pcmMarks));
-    }
-  }, [profile, pcmMarksInput]);
 
   const [saved, setSaved] = useState(() => {
     try {
@@ -934,15 +890,10 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
     doc.save('kcet-2025-shortlist.pdf');
   };
 
-  const runPrediction = async (e) => {
+  const runPrediction = (e) => {
     if (e) e.preventDefault();
     setValidationErrors(new Set());
     try {
-      // Credit gate: check if user has enough credits (skip for premium)
-      if (profile && !isPremium && credits < 20) {
-        onShowPremium();
-        return;
-      }
       let rank;
       let prediction = null;
       if (mode === 'rank') {
@@ -1017,14 +968,6 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
         setPendingRank(rank);
         onRequestAuth();
       } else {
-        // Deduct credits on successful prediction
-        if (!isPremium) {
-          const deductOk = await onDeductCredits();
-          if (!deductOk) {
-            onShowPremium();
-            return;
-          }
-        }
         setEstimatedRank(rank);
         document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -1150,9 +1093,6 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
           </div>
 
           <div className="header-actions">
-            {profile && (
-              <CreditCounter credits={credits} isPremium={isPremium} />
-            )}
             <button
               className={`saved-pill ${saved.size > 0 ? 'has-saved' : ''}`}
               type="button"
@@ -1408,35 +1348,11 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
                 />
               </div>
 
-              <button 
-                className="primary-btn" 
-                type="submit"
-                style={{ 
-                  display: 'inline-flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  gap: '2px', 
-                  padding: '8px 16px', 
-                  minHeight: '52px' 
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
-                  {mode === 'aggregate' ? 'Predict Rank' : 'Show colleges'}
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                {profile && !isPremium && (
-                  <span style={{ fontSize: '11px', opacity: 0.85, fontWeight: 'normal', letterSpacing: '0.3px' }}>
-                    ⚡ Costs 20 Credits
-                  </span>
-                )}
-                {profile && isPremium && (
-                  <span style={{ fontSize: '11px', opacity: 0.85, fontWeight: 'normal', letterSpacing: '0.3px', color: '#4ade80' }}>
-                    ✨ Free with Pro Pass
-                  </span>
-                )}
+              <button className="primary-btn" type="submit">
+                {mode === 'aggregate' ? 'Predict Rank' : 'Show colleges'}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
             </form>
           </aside>
@@ -1696,37 +1612,10 @@ export default function App() {
   const [showAboutUs, setShowAboutUs] = useState(false);
   const [showContactUs, setShowContactUs] = useState(false);
   const [selectedCollegeCode, setSelectedCollegeCode] = useState(null);
-  const [credits, setCredits] = useState(100);
-  const [isPremium, setIsPremium] = useState(false);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
-
-  // Sync credits with backend whenever profile changes
   useEffect(() => {
     if (profile) {
       sessionStorage.removeItem(GOOGLE_NONCE_KEY);
-      // Sync user credits from backend
-      (async () => {
-        try {
-          const res = await fetch(`${API_BASE}/users/sync`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              googleId: profile.googleId,
-              email: profile.email,
-              name: profile.name
-            })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            setCredits(data.credits);
-            setIsPremium(data.isPremium);
-          }
-        } catch (err) {
-          console.warn('[Credits] Failed to sync credits:', err);
-        }
-      })();
     }
   }, [profile]);
 
@@ -2035,31 +1924,6 @@ export default function App() {
         onAboutUs={() => setShowAboutUs(true)}
         onContactUs={() => setShowContactUs(true)}
         onViewCollege={(code) => setSelectedCollegeCode(code)}
-        credits={credits}
-        isPremium={isPremium}
-        onDeductCredits={async () => {
-          try {
-            const res = await fetch(`${API_BASE}/users/deduct`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ googleId: profile?.googleId })
-            });
-            if (res.ok) {
-              const data = await res.json();
-              setCredits(data.credits);
-              return true;
-            }
-            if (res.status === 403) {
-              const data = await res.json();
-              setCredits(data.credits || 0);
-              return false;
-            }
-            return true; // Allow on network error gracefully
-          } catch {
-            return true; // Fail-open so prediction still works offline
-          }
-        }}
-        onShowPremium={() => setShowPremiumModal(true)}
       />
 
       {/* College Detail Modal */}
@@ -2456,21 +2320,6 @@ export default function App() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Premium Upgrade Modal */}
-      {showPremiumModal && (
-        <PremiumUpgradeModal
-          currentCredits={credits}
-          onClose={() => setShowPremiumModal(false)}
-          googleId={profile?.googleId}
-          userName={profile?.name}
-          userEmail={profile?.email}
-          onPaymentSuccess={(data) => {
-            setIsPremium(true);
-            setCredits(data.credits || credits);
-          }}
-        />
       )}
     </>
   );
