@@ -29,9 +29,9 @@ const MultiSelectDropdown = ({ options, selected, onChange, placeholder, unit = 
     onChange(newSelected);
   };
 
-  const displayValue = selected.includes('all') 
-    ? placeholder 
-    : `${selected.length} ${unit}${selected.length > 1 ? 'es' : ''} selected`;
+  const displayValue = selected.includes('all')
+    ? placeholder
+    : options.filter(o => selected.includes(o.value)).map(o => o.label).join(', ');
 
   return (
     <div className="multi-select" ref={dropdownRef}>
