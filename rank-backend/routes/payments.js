@@ -1,8 +1,10 @@
 const express = require('express');
-const router = express.Router();
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const User = require('../models/User');
+const adminAuth = require('../middleware/adminAuth');
+
+const router = express.Router();
 
 // Initialize Razorpay instance if keys are provided
 const hasRazorpayKeys = process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET;

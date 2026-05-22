@@ -1,8 +1,9 @@
-require('dotenv').config(); // Loaded environment variables
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const collegeRoutes = require('./routes/colleges');
 const userRoutes = require('./routes/users');
 const paymentRoutes = require('./routes/payments');
@@ -11,9 +12,28 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // ──────────────────────────────────────────────
-// Middleware
+// Global Rate Limiting & Security
 // ──────────────────────────────────────────────
-app.use(helmet()); // Basic security headers
+app.use(helmet());
+
+// Global rate limiter
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 requests per windowMs
+  message: { error: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
+
+// Request timeout
+app.use((req, res, next) => {
+  res.setTimeout(30000, () => {
+    if (!res.headersSent) {
+      res.status(408).json({ error: 'Request timeout' });
+    }
+  });
+  next();
+});
 
 const allowedOrigins = [
   'https://predictors2-0-iedq.vercel.app',
@@ -42,7 +62,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'x-admin-password'],
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // ──────────────────────────────────────────────
 // Routes
@@ -71,7 +91,12 @@ app.use((req, res) => {
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/kcet_colleges';
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+    maxPoolSize: 10,
+    bufferCommands: false,
+  })
   .then(() => {
     console.log('✅ Connected to MongoDB');
     app.listen(PORT, () => {

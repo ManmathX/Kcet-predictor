@@ -1,6 +1,8 @@
 const express = require('express');
-const router = express.Router();
 const User = require('../models/User');
+const adminAuth = require('../middleware/adminAuth');
+
+const router = express.Router();
 
 // POST /api/users/sync
 // Sync user profile from frontend and return current credits

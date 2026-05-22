@@ -1,6 +1,9 @@
 const express = require('express');
+const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
+const escapeStringRegexp = require('escape-string-regexp');
 const College = require('../models/College');
+const adminAuth = require('../middleware/adminAuth');
 
 const router = express.Router();
 
@@ -26,12 +29,12 @@ const authLimiter = rateLimit({
 // ──────────────────────────────────────────────
 // Middleware: Admin password check
 // ──────────────────────────────────────────────
-function requireAdmin(req, res, next) {
-  const password = req.headers['x-admin-password'];
-  if (!password || password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Unauthorized — invalid admin password.' });
-  }
-  next();
+// Timing-safe admin check for inline use (read-only routes)
+function isAdmin(req) {
+  const provided = req.headers['x-admin-password'] || '';
+  const expected = process.env.ADMIN_PASSWORD || '';
+  if (!provided || provided.length !== expected.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
 }
 
 // Validation helper for Mixed type cutoffs
@@ -59,13 +62,12 @@ router.get('/', async (req, res) => {
     const filter = {};
 
     // Only admins can see unpublished colleges
-    const isAdmin = req.headers['x-admin-password'] === process.env.ADMIN_PASSWORD;
-    if (!(isAdmin && include_drafts === 'true')) {
+    if (!(isAdmin(req) && include_drafts === 'true')) {
       filter.isPublished = true;
     }
 
     if (search) {
-      const regex = new RegExp(search, 'i');
+      const regex = new RegExp(escapeStringRegexp(search), 'i');
       filter.$or = [
         { college_name: regex },
         { college_code: regex },
@@ -75,7 +77,7 @@ router.get('/', async (req, res) => {
     }
 
     if (city) {
-      filter.city = new RegExp(`^${city}$`, 'i');
+      filter.city = new RegExp(`^${escapeStringRegexp(city)}$`, 'i');
     }
 
     // Exclude the heavy courses array from the list view payload
@@ -111,8 +113,7 @@ router.get('/:code', async (req, res) => {
     }
 
     // Block public access to unpublished colleges
-    const isAdmin = req.headers['x-admin-password'] === process.env.ADMIN_PASSWORD;
-    if (!college.isPublished && !isAdmin) {
+    if (!college.isPublished && !isAdmin(req)) {
       return res.status(404).json({ error: 'College not found.' });
     }
 
@@ -128,7 +129,7 @@ router.get('/:code', async (req, res) => {
 // ──────────────────────────────────────────────
 
 // POST /api/colleges — Create a new college
-router.post('/', adminLimiter, requireAdmin, async (req, res) => {
+router.post('/', adminLimiter, adminAuth, async (req, res) => {
   try {
     const { college_code, college_name, courses } = req.body;
     if (!college_code || !college_name) {
@@ -157,7 +158,7 @@ router.post('/', adminLimiter, requireAdmin, async (req, res) => {
 });
 
 // PUT /api/colleges/:code — Update a college
-router.put('/:code', adminLimiter, requireAdmin, async (req, res) => {
+router.put('/:code', adminLimiter, adminAuth, async (req, res) => {
   try {
     if (req.body.courses && !validateCourses(req.body.courses)) {
       return res.status(400).json({ error: 'Invalid courses format. cutoffs must be a valid JSON object.' });
@@ -184,7 +185,7 @@ router.put('/:code', adminLimiter, requireAdmin, async (req, res) => {
 });
 
 // PATCH /api/colleges/:code/publish — Toggle publish state
-router.patch('/:code/publish', adminLimiter, requireAdmin, async (req, res) => {
+router.patch('/:code/publish', adminLimiter, adminAuth, async (req, res) => {
   try {
     const { isPublished } = req.body;
 
@@ -216,7 +217,7 @@ router.patch('/:code/publish', adminLimiter, requireAdmin, async (req, res) => {
 });
 
 // DELETE /api/colleges/:code — Delete a college
-router.delete('/:code', adminLimiter, requireAdmin, async (req, res) => {
+router.delete('/:code', adminLimiter, adminAuth, async (req, res) => {
   try {
     const college = await College.findOneAndDelete({ college_code: req.params.code });
     if (!college) {
@@ -231,8 +232,12 @@ router.delete('/:code', adminLimiter, requireAdmin, async (req, res) => {
 
 // POST /api/colleges/auth/verify — Verify admin password
 router.post('/auth/verify', authLimiter, (req, res) => {
-  const { password } = req.body;
-  if (password === process.env.ADMIN_PASSWORD) {
+  const provided = req.body.password || '';
+  const expected = process.env.ADMIN_PASSWORD || '';
+  const valid =
+    provided.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
+  if (valid) {
     res.json({ success: true });
   } else {
     res.status(401).json({ success: false, error: 'Invalid password.' });
