@@ -781,7 +781,7 @@ const ResultItem = ({ item, seat, saved, toggleSaved, formatNumber, onViewColleg
 };
 
 function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAboutUs, onContactUs, onViewCollege }) {
-  const [mode, setMode] = useState('aggregate');
+  const [mode, setMode] = useState('rank');
   const [kcetScoreInput, setKcetScoreInput] = useState('');
   const [pcmMarksInput, setPcmMarksInput] = useState('');
   const [rankInput, setRankInput] = useState('');
@@ -1179,33 +1179,6 @@ function PredictorApp({ profile, onEditProfile, onSignOut, onRequestAuth, onAbou
             </div>
 
             <form className="form-section" onSubmit={runPrediction}>
-              <div className="field">
-                <div className="segmented" role="tablist" aria-label="Predictor type">
-                  <button
-                    type="button"
-                    className={mode === 'aggregate' ? 'active' : ''}
-                    onClick={() => {
-                      setMode('aggregate');
-                      setEstimatedRank(null);
-                      setAggregateBreakdown(null);
-                    }}
-                  >
-                    Rank
-                  </button>
-                  <button
-                    type="button"
-                    className={mode === 'rank' ? 'active' : ''}
-                    onClick={() => {
-                      setMode('rank');
-                      setEstimatedRank(null);
-                      setAggregateBreakdown(null);
-                    }}
-                  >
-                    College
-                  </button>
-                </div>
-              </div>
-
               {mode === 'aggregate' && (
                 <>
                   <div className="field-row">
