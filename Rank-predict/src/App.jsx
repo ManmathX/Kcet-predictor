@@ -1649,6 +1649,17 @@ export default function App() {
     }
   }, []);
 
+  // Initialize Google Sign-In once on mount
+  useEffect(() => {
+    const googleIdentity = window.google?.accounts?.id;
+    if (!googleIdentity) return;
+    googleIdentity.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential,
+      use_fedcm_for_prompt: false,
+    });
+  }, [handleGoogleCredential]);
+
   const handleGoogleSignIn = useCallback(() => {
     const googleIdentity = window.google?.accounts?.id;
     if (!googleIdentity) {
@@ -1662,14 +1673,8 @@ export default function App() {
 
     setAuthError('');
     setAuthMessage('Opening Google sign-in...');
-    googleIdentity.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleCredential,
-      nonce,
-      use_fedcm_for_prompt: false,
-    });
     googleIdentity.prompt();
-  }, [handleGoogleCredential]);
+  }, []);
 
   const handleProfileChange = useCallback((field, value) => {
     setProfileForm((current) => ({
